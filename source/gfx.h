@@ -8,9 +8,19 @@
 namespace gfx
 {
 
+  enum gl_type
+  {
+    // TODO add more types
+    gl_int,
+    gl_uint,
+    gl_float,
+    gl_float2,
+    gl_float3,
+    gl_float4
+  };
+
   enum buffer_type
   {
-    none = 0,
     vertex_buffer,
     index_buffer,
     other_buffer // idk, not sure about this
@@ -43,10 +53,22 @@ namespace gfx
     buffer_type type_;
   };
 
+  struct vertex_buffer_layout_object_t
+  {
+    gl_type type_;
+    u32 count_;
+    u32 size_;
+    bool normalized_;
+
+    vertex_buffer_layout_object_t(gl_type type, bool normalized = false);
+  };
+
   struct vertex_buffer_layout_t
   {
-    std::vector<u32> layout_;
+    std::vector<vertex_buffer_layout_object_t> layout_;
+    u32 stride_;
 
+    vertex_buffer_layout_t(std::initializer_list<vertex_buffer_layout_object_t> list);
   };
 
   using shader_t = u32;
@@ -61,7 +83,7 @@ namespace gfx
   void clear(i32 flags);
 
   vertex_array_t vertex_array_ctor();
-  void vertex_array_set_vbo(vertex_array_t vao, buffer_t vbo);
+  void vertex_array_set_vbo(vertex_array_t vao, buffer_t vbo, vertex_buffer_layout_t& layout);
   void vertex_array_set_ibo(vertex_array_t vao, buffer_t ibo);
 
 
@@ -79,6 +101,9 @@ namespace gfx
   void program_delete(program_t p);
   void texture_delete(texture_t t);
 
+  void bind_vertex_array(vertex_array_t vao);
+  void bind_buffer(buffer_t b);
+  void bind_program(program_t p);
 }
 
 

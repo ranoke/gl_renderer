@@ -21,6 +21,6 @@ src=(
   ../source/gfx.cpp
 )
 
-g++ -g ${inc[*]} ${src[*]} ${flags[*]} -lm -o ${proj_name}
+g++ -g -w ${inc[*]} ${src[*]} ${flags[*]} -lm -o ${proj_name}
 
 cd ..

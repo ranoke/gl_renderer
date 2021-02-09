@@ -7,7 +7,30 @@
 
 namespace gfx
 {
+  u32 gl_type_components_count(gl_type t);
+  u32 gl_type_get(gl_type t);
+  u32 gl_type_size(gl_type t);
   u32 gl_buffer_type(buffer_type t);
+  
+
+  vertex_buffer_layout_object_t::vertex_buffer_layout_object_t(gl_type type, bool normalized)
+    : type_(type)
+    , count_(gl_type_components_count(type))
+    , size_(gl_type_size(type))
+    , normalized_(normalized)
+  {
+  }
+  
+  vertex_buffer_layout_t::vertex_buffer_layout_t(std::initializer_list<vertex_buffer_layout_object_t> list)
+    : layout_(list)
+  {
+    // and here calc stride
+    stride_ = 0;
+    for(auto& i : list)
+    {
+      stride_ += i.size_;
+    }
+  }
 
   void init()
   {
@@ -39,10 +62,30 @@ namespace gfx
     return vao;
   }
 
-  void vertex_array_set_vbo(vertex_array_t vao, buffer_t vbo, vertex_buffer_layout_t layout)
+
+  // TODO after enabling warnings add push pop warning disabler
+  void vertex_array_set_vbo(vertex_array_t vao, buffer_t vbo, vertex_buffer_layout_t& layout)
   {
-    
+    bind_vertex_array(vao);
+    bind_buffer(vbo);
+    int a = 0;
+    u32 offset = 0;
+    for(auto& i : layout.layout_)
+    {
+      glVertexAttribPointer(
+        a,
+        i.count_,
+        gl_type_get(i.type_),
+        i.normalized_, 
+        layout.stride_, 
+        (const void*)offset
+      );
+      glEnableVertexAttribArray(a);
+      offset += i.size_;
+      a++;
+    }
   }
+
   void vertex_array_set_ibo(vertex_array_t vao, buffer_t ibo)
   {
   }
@@ -166,6 +209,69 @@ namespace gfx
     glDeleteTextures(1, &t);
   }
 
+  void bind_vertex_array(vertex_array_t vao)
+  {
+    glBindVertexArray(vao);
+  }
+
+  void bind_buffer(buffer_t b)
+  {
+    u32 type = gl_buffer_type(b.type_);
+    glBindBuffer(type, b.buffer_);
+  }
+
+  void bind_program(program_t p)
+  {
+    glUseProgram(p);
+  }
+
+  u32 gl_type_components_count(gl_type t)
+  {
+    // TODO add more types
+    switch(t)
+    {
+      case gl_int: return 1;
+      case gl_uint: return 1;
+      case gl_float: return 1;
+      case gl_float2: return 2;
+      case gl_float3: return 3;
+      case gl_float4: return 4;
+      default: return 4; // The initial value is 4. (as in the opengl docs)
+    }
+    assert(false);
+    return 0;
+  }
+
+  u32 gl_type_get(gl_type t)
+  {
+    // TODO add more types
+    switch(t)
+    {
+      case gl_int: return GL_INT;
+      case gl_uint: return GL_UNSIGNED_INT;
+      default: return GL_FLOAT; // The initial value is GL_FLOAT. (as in the opengl docs)
+      
+    }
+    assert(false);
+    return 0;
+  }
+
+  u32 gl_type_size(gl_type t)
+  {
+    // TODO add more types
+    switch(t)
+    {
+      case gl_int: return 1*4;
+      case gl_uint: return 1*4;
+      case gl_float: return 1*4;
+      case gl_float2: return 2*4;
+      case gl_float3: return 3*4;
+      case gl_float4: return 4*4;
+    }
+    assert(false);
+    return 0;
+
+  }
 
   u32 gl_buffer_type(buffer_type t)
   {
