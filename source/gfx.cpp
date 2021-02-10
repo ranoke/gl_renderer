@@ -41,7 +41,11 @@ namespace gfx
       assert(false);
       exit(-1);
     }
+    i32 minor, major;
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    fprintf(stdout, "Status: Using OpenGL %d.%d\n", major, minor);
 
   }
 
@@ -62,12 +66,10 @@ namespace gfx
     return vao;
   }
 
-
-  // TODO after enabling warnings add push pop warning disabler
-  void vertex_array_set_vbo(vertex_array_t vao, buffer_t vbo, vertex_buffer_layout_t& layout)
+  // make sure u binded vao and vbo before
+  void vertex_array_set_layout(const vertex_buffer_layout_t& layout)
   {
-    bind_vertex_array(vao);
-    bind_buffer(vbo);
+    // TODO after enabling warnings add push pop warning disabler
     int a = 0;
     u32 offset = 0;
     for(auto& i : layout.layout_)
@@ -86,9 +88,6 @@ namespace gfx
     }
   }
 
-  void vertex_array_set_ibo(vertex_array_t vao, buffer_t ibo)
-  {
-  }
 
   buffer_t buffer_ctor(buffer_desc_t desc)
   {
@@ -176,10 +175,10 @@ namespace gfx
     glGenTextures(1, &t);
     glBindTexture(GL_TEXTURE_2D, t);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, desc.width_, desc.height_, 0, GL_RGB,
                 GL_UNSIGNED_BYTE, desc.data_);
@@ -223,6 +222,14 @@ namespace gfx
   void bind_program(program_t p)
   {
     glUseProgram(p);
+  }
+
+  void bind_texture(texture_t t, u32 active_texture)
+  {
+    // TODO maybe create struct for texture so 
+    // we know the type of it
+    glActiveTexture(GL_TEXTURE0 + active_texture);
+    glBindTexture(GL_TEXTURE_2D, t);
   }
 
   u32 gl_type_components_count(gl_type t)

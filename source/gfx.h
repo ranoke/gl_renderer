@@ -83,8 +83,7 @@ namespace gfx
   void clear(i32 flags);
 
   vertex_array_t vertex_array_ctor();
-  void vertex_array_set_vbo(vertex_array_t vao, buffer_t vbo, vertex_buffer_layout_t& layout);
-  void vertex_array_set_ibo(vertex_array_t vao, buffer_t ibo);
+  void vertex_array_set_layout(const vertex_buffer_layout_t& layout);
 
 
   buffer_t buffer_ctor(buffer_desc_t desc);
@@ -104,6 +103,7 @@ namespace gfx
   void bind_vertex_array(vertex_array_t vao);
   void bind_buffer(buffer_t b);
   void bind_program(program_t p);
+  void bind_texture(texture_t t, u32 active_texture);
 }
 
 
