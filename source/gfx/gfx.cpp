@@ -272,6 +272,11 @@ namespace gfx
     glUniform1i(glGetUniformLocation(program, name), value);
   }
 
+  void set_uniform_vec3(program_t program, const char* name, const glm::vec3& val)
+  {
+    glUniform3f(glGetUniformLocation(program, name), val[0], val[1], val[2]);
+  }
+
   void set_uniform_mat4(program_t program, const char* name, const glm::mat4& val)
   {
     glUniformMatrix4fv(glGetUniformLocation(program, name), 1, false, glm::value_ptr(val));

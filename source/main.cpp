@@ -12,8 +12,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "renderer/camera.h"
 #include "utils/mesh_loader.h"
+
+#include "renderer/camera.h"
+#include "renderer/mesh.h"
+#include "renderer/light.h"
 
 #include "gui/gui.h"
 
@@ -43,6 +46,7 @@ in vec2 uv;
 
 void main()
 {
+  
   frag_color = texture(u_tex, uv);
 } 
 )";
@@ -57,23 +61,31 @@ uniform mat4 u_view;
 uniform mat4 u_proj;
 uniform mat4 u_model;
 
+uniform vec3 u_light_pos;
+
 out vec2 uv;
+out vec3 normal;
 
 void main()
 {
   gl_Position = u_proj*u_view*vec4(a_pos, 1.0); // see how we directly give a vec3 to vec4's constructor
   uv = a_uv;
+  normal = a_normal;
 }
 )";
+
 std::string obj_fragment_src = R"(
 #version 330 core
 out vec4 frag_color;
 
 uniform sampler2D u_tex;
 in vec2 uv;
+in vec3 normal;
 void main()
 {
-  frag_color = vec4(1, 0, 0, 1); 
+  vec3 objectColor = vec3(0.8, 0.3, 0.4);
+
+  frag_color = vec4(objectColor, 1.0);
 }
 )";
 
@@ -86,9 +98,9 @@ layout (location = 2) in vec3 a_normal;
 
 out vec3 TexCoords;
 
-
 uniform mat4 u_view;
 uniform mat4 u_proj;
+
 void main()
 {
     TexCoords = aPos;
@@ -179,6 +191,8 @@ int main()
 
   gui::init(window.window_);
 
+  renderer::light_t light_red({0,0,0}, 0);
+
   while (1)
   {
 
@@ -215,6 +229,7 @@ glDepthMask(GL_TRUE);
     gfx::bind_program(p_default);
     gfx::set_uniform_mat4(p_default, "u_view", camera.view_);
     gfx::set_uniform_mat4(p_default, "u_proj", camera.projection_);
+    gfx::set_uniform_vec3(p_default, "u_light_pos", light_red.position_);
     gfx::draw_elements(gfx::gl_triangles, mesh.index_count_, gfx::gl_uint, 0);
 
 

@@ -13,9 +13,13 @@ namespace renderer
     light_t()
     {}
     light_t(const glm::vec3 pos, float strength)
+      : position_(pos)
+      , strength_(strength)
     {
-
     }
+
+    glm::vec3 position_;
+    float strength_;
   };
 
 

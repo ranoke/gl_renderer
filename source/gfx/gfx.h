@@ -131,6 +131,7 @@ namespace gfx
 
   void draw_elements(gl_draw_mode mode, u64 count, gl_type type, u64 offset);
 
+  void set_uniform_vec3(program_t program, const char* name, const glm::vec3& val);
   void set_uniform_mat4(program_t program, const char* name, const glm::mat4& val);
   void set_uniform_int(program_t program, const char* name, int value);
 }
