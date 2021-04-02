@@ -267,9 +267,14 @@ namespace gfx
     glDrawElements(gl_draw_mode_get(mode), count, gl_type_get(type), (const void*)offset);
   }
 
-  void set_uniform_int(program_t program, const char* name, int value)
+  void set_uniform_int(program_t program, const char* name, int val)
   {
-    glUniform1i(glGetUniformLocation(program, name), value);
+    glUniform1i(glGetUniformLocation(program, name), val);
+  }
+
+  void set_uniform_float(program_t program, const char* name, float val)
+  {
+    glUniform1f(glGetUniformLocation(program, name), val);
   }
 
   void set_uniform_vec3(program_t program, const char* name, const glm::vec3& val)
@@ -281,6 +286,8 @@ namespace gfx
   {
     glUniformMatrix4fv(glGetUniformLocation(program, name), 1, false, glm::value_ptr(val));
   }
+  
+  
 
   u32 gl_type_components_count(gl_type t)
   {

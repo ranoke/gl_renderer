@@ -1,15 +1,20 @@
 #ifndef __GFX_H__
 #define __GFX_H__
 
+#include "base/base.h"
 #include "base/types.h"
 
 #include <string>
 #include <vector>
+#include <utility>
+#include <cstring>
 
 #include <glm/glm.hpp>
 
+
 namespace gfx
 {
+
 
   enum gl_type
   {
@@ -37,7 +42,7 @@ namespace gfx
 
   enum buffer_type
   {
-    vertex_buffer,
+    vertex_buffer = 1,
     index_buffer,
     other_buffer // idk, not sure about this
   };
@@ -60,14 +65,41 @@ namespace gfx
   {
     u64 size_;
     void* data_;
-    buffer_type type_;
+    buffer_type type_ = zero_enum(buffer_type); // dont forget to init this becouse if not it will lead to memory leaks probably :(
   };
 
   
   struct buffer_t
   {
+
+    buffer_t(){}
+    buffer_t(u32 buffer, buffer_type type = zero_enum(buffer_type))
+      : buffer_(buffer)
+      , type_(type)
+    {
+    }
+    buffer_t(const buffer_t& other)
+    {
+      memcpy(this, &other, sizeof(buffer_t));
+    }
+    buffer_t(buffer_t&& other)
+      : buffer_(std::exchange(other.buffer_, 0))
+      , type_(std::exchange(other.type_, zero_enum(buffer_type)))
+    {}
+    buffer_t& operator=(const buffer_t& other)
+    {
+      memcpy(this, &other, sizeof(buffer_t));
+      return *this;
+    }
+    buffer_t& operator=(buffer_t&& other)
+    {
+      buffer_ = std::exchange(other.buffer_, 0);
+      type_ = std::exchange(other.type_, zero_enum(buffer_type));
+      return *this;
+    }
+
     u32 buffer_;
-    buffer_type type_;
+    buffer_type type_ = zero_enum(buffer_type);
   };
 
   struct texture_t
@@ -131,9 +163,10 @@ namespace gfx
 
   void draw_elements(gl_draw_mode mode, u64 count, gl_type type, u64 offset);
 
+  void set_uniform_int(program_t program, const char* name, int value);
+  void set_uniform_float(program_t program, const char* name, float val);
   void set_uniform_vec3(program_t program, const char* name, const glm::vec3& val);
   void set_uniform_mat4(program_t program, const char* name, const glm::mat4& val);
-  void set_uniform_int(program_t program, const char* name, int value);
 }
 
 

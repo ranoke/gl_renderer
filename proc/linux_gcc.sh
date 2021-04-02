@@ -8,7 +8,7 @@ proj_name=gl_renderer
 proj_root_dir=$(pwd)/../
 
 flags=(
-  -std=c++11 -Wl,--no-as-needed -lGLEW -lglfw -ldl -lGL -lX11 -pthread -lXi
+  -std=c++17 -Wl,--no-as-needed -lGLEW -lglfw -ldl -lGL -lX11 -pthread -lXi
 )
 
 inc=(
@@ -24,6 +24,7 @@ src=(
   ../source/utils/tiny_obj_loader.cpp
   ../source/gui/gui.cpp
   ../source/utils/stb_image.cpp
+  ../source/utils/stb_perlin.cpp
 
   # imgui
   ../third_party/imgui/imgui_demo.cpp
