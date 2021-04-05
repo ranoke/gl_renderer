@@ -1,6 +1,7 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
-#include <base/types.h>
+#include "base/base.h"
+#include "base/types.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>

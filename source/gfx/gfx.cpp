@@ -125,6 +125,7 @@ namespace gfx
       glGetShaderiv(s, GL_INFO_LOG_LENGTH, &max_length);
       char* log = new char[max_length];
       glGetShaderInfoLog(s, max_length, &max_length, log);
+      printf("[%s]", src.c_str());
       printf("ERROR: shader compile failed: \n");
       printf("%s", log);
       delete[] log;

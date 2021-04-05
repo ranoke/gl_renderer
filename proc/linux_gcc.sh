@@ -25,6 +25,8 @@ src=(
   ../source/gui/gui.cpp
   ../source/utils/stb_image.cpp
   ../source/utils/stb_perlin.cpp
+  ../source/utils/stb_leakcheck.cpp
+  ../source/utils/stb_include.cpp
 
   # imgui
   ../third_party/imgui/imgui_demo.cpp
@@ -36,6 +38,7 @@ src=(
 
 defines=(
   -D GLFW_INCLUDE_NONE
+  #-D STB_LEAKCHECK_SHOWALL
 )
 
 g++ -g -w ${defines[*]} ${inc[*]} ${src[*]} ${flags[*]} -lm -o ${proj_name}

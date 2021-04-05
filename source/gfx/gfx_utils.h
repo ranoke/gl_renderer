@@ -2,6 +2,8 @@
 #define __GFX_UTILS_H__
 
 #include "gfx.h"
+
+#include "base/base.h"
 #include "utils/stb_image.h"
 
 #include <cstring>
@@ -20,7 +22,7 @@ namespace gfx_utils
   {
     gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_cubemap};
     i32 w,h,c;
-    desc.data_ = new void*[6];
+    desc.data_ = malloc(6*sizeof(void*));
 
     void** data = (void**)desc.data_;
     for(int i = 0; i < 6; i++)
@@ -41,7 +43,7 @@ namespace gfx_utils
       stbi_image_free(data[i]);
     }
 
-    delete[] desc.data_;
+    free(desc.data_);
 
     return t;
   }

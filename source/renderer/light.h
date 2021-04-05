@@ -1,6 +1,7 @@
 #ifndef __LIGHT_H__
 #define __LIGHT_H__
 
+#include "base/base.h"
 #include "base/types.h"
 
 #include <glm/glm.hpp>

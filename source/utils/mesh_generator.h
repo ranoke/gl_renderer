@@ -1,6 +1,7 @@
 #ifndef __MESH_GENERATOR_H__
 #define __MESH_GENERATOR_H__
 
+#include "base/base.h"
 #include "base/types.h"
 #include "renderer/mesh.h"
 #include "stb_perlin.h"
