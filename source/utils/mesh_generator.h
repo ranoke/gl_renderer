@@ -3,7 +3,7 @@
 
 #include "base/base.h"
 #include "base/types.h"
-#include "renderer/mesh.h"
+#include "renderer/render_object.h"
 #include "stb_perlin.h"
 
 #include <glm/glm.hpp>
@@ -30,7 +30,7 @@ void add<glm::vec4>(std::vector<f32> &v, glm::vec4 &a)
   v.push_back(a.w);
 }
 
-renderer::mesh_t
+renderer::render_object_t
 generate_terrain_mesh(i32 width, i32 height, glm::vec3 scale, f32 octaves = 8.0f, f32 lacunarity = 2.0f, f32 gain = 0.5f)
 {
   f32 scale_x = scale.x;
@@ -115,7 +115,7 @@ generate_terrain_mesh(i32 width, i32 height, glm::vec3 scale, f32 octaves = 8.0f
       indices.size() * sizeof(u32),
       indices.data(),
       gfx::index_buffer});
-  return renderer::mesh_t("", vbo, ibo, indices.size());
+  return renderer::render_object_t("", vbo, ibo, indices.size(), {});
 }
 
 #endif // __MESH_GENERATOR_H__

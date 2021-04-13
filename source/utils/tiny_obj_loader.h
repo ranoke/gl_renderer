@@ -349,7 +349,7 @@ struct index_t {
   int texcoord_index;
 };
 
-struct mesh_t {
+struct render_object_t {
   std::vector<index_t> indices;
   std::vector<unsigned char>
       num_face_vertices;          // The number of vertices per
@@ -378,7 +378,7 @@ struct points_t {
 
 struct shape_t {
   std::string name;
-  mesh_t mesh;
+  render_object_t mesh;
   lines_t lines;
   points_t points;
 };

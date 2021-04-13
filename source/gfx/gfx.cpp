@@ -17,6 +17,7 @@ namespace gfx
   u32 gl_buffer_type(buffer_type t);
   u32 gl_draw_mode_get(gl_draw_mode m);
   u32 gl_texture_type_get(gl_texture_type t);
+  u32 gl_format_get(gl_format f);
   
 
   vertex_buffer_layout_object_t::vertex_buffer_layout_object_t(gl_type type, bool normalized)
@@ -27,7 +28,7 @@ namespace gfx
   {
   }
   
-  vertex_buffer_layout_t::vertex_buffer_layout_t(std::initializer_list<vertex_buffer_layout_object_t> list)
+  vertex_buffer_layout_t::vertex_buffer_layout_t(const std::initializer_list<vertex_buffer_layout_object_t>& list)
     : layout_(list)
   {
     // and here calc stride
@@ -95,7 +96,7 @@ namespace gfx
   }
 
 
-  buffer_t buffer_ctor(buffer_desc_t desc)
+  buffer_t buffer_ctor(const buffer_desc_t& desc)
   {
     u32 b;
     glGenBuffers(1, &b);
@@ -176,23 +177,26 @@ namespace gfx
     return 0;
   }
 
-  texture_t texture_ctor(texture_desc_t desc, bool free_data /*= true*/)
+  texture_t texture_ctor(const texture_desc_t& desc, bool free_data /*= true*/)
   {
     u32 t;
     glGenTextures(1, &t);
-    u32 type = gl_texture_type_get(desc.type_);
-    glBindTexture(type, t);
+    u32 texture_type = gl_texture_type_get(desc.texture_type_);
+    u32 data_type = gl_type_get(desc.data_type_);
+    u32 format = gl_format_get(desc.format_);
+    u32 internal_format = gl_format_get(desc.internal_format_);
+    glBindTexture(texture_type, t);
 
-    
+    // TODO add wrapping? 
 
-    switch (desc.type_)
+    switch (desc.texture_type_)
     {
       case gl_texture_2d: {
-      glTexImage2D(type, 0, GL_RGB, desc.width_, desc.height_, 0, GL_RGB, GL_UNSIGNED_BYTE, desc.data_);
-      glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-      glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexImage2D(texture_type, 0, internal_format, desc.width_, desc.height_, 0, format, data_type, desc.data_);
+      glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+      glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       } break;
       case gl_texture_cubemap: {
       void** data = (void**)desc.data_;
@@ -200,7 +204,7 @@ namespace gfx
       {
 
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
-                            0, GL_RGB, desc.width_, desc.height_, 0, GL_RGB, GL_UNSIGNED_BYTE, data[i]);
+                            0, internal_format, desc.width_, desc.height_, 0, format, data_type, data[i]);
       }
       glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -210,15 +214,43 @@ namespace gfx
       } break;
     }
 
-    glGenerateMipmap(type);
+    glGenerateMipmap(texture_type);
 
     if(free_data)
         free(desc.data_);
 
-    return {t, desc.type_};
+    return {t, desc.texture_type_, desc.width_, desc.height_};
   }
 
-  void buffer_delete(buffer_t b)
+
+  framebuffer_t framebuffer_ctor(const framebuffer_desc_t& desc)
+  {
+    //TODO improve
+    u32 fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    auto tex = texture_ctor({
+      640,
+      480,
+      0,
+      gl_texture_2d
+    }, false);
+
+    bind_texture(tex, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+  
+
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      printf("Framebuffer is not completed!\n");
+
+    glBindFramebuffer(GL_FRAMEBUFFER, tex); 
+    return (framebuffer_t){fbo, (texture_t){tex, gl_texture_2d, 640, 480}};
+  }
+
+
+  void buffer_delete(const buffer_t& b)
   {
     glDeleteBuffers(1, &b.buffer_);
   }
@@ -234,9 +266,15 @@ namespace gfx
   {
     glDeleteProgram(p);
   }
-  void texture_delete(texture_t t)
+  void texture_delete(const texture_t& t)
   {
     glDeleteTextures(1, &t.texture_);
+  }
+  void framebuffer_delete(const framebuffer_t& b)
+  {
+    //TODO search for the info do i need to delete texture as well when i do delete 
+    // framebuffer.... probably i do
+    glDeleteFramebuffers(1, &b.buffer_);
   }
 
   void bind_vertex_array(vertex_array_t vao)
@@ -244,7 +282,7 @@ namespace gfx
     glBindVertexArray(vao);
   }
 
-  void bind_buffer(buffer_t b)
+  void bind_buffer(const buffer_t& b)
   {
     u32 type = gl_buffer_type(b.type_);
     glBindBuffer(type, b.buffer_);
@@ -255,12 +293,17 @@ namespace gfx
     glUseProgram(p);
   }
 
-  void bind_texture(texture_t t, u32 active_texture)
+  void bind_texture(const texture_t& t, u32 active_texture)
   {
     // TODO maybe create struct for texture so 
     // we know the type of it
     glActiveTexture(GL_TEXTURE0 + active_texture);
-    glBindTexture(gl_texture_type_get(t.type_), t.texture_);
+    glBindTexture(gl_texture_type_get(t.texture_type_), t.texture_);
+  }
+
+  void bind_framebuffer(const framebuffer_t& b)
+  {
+    glBindFramebuffer(GL_FRAMEBUFFER, b.buffer_);
   }
 
   void draw_elements(gl_draw_mode mode, u64 count, gl_type type, u64 offset)
@@ -295,6 +338,8 @@ namespace gfx
     // TODO add more types
     switch(t)
     {
+      case gl_byte: return 1;
+      case gl_ubyte: return 1;
       case gl_int: return 1;
       case gl_uint: return 1;
       case gl_float: return 1;
@@ -312,6 +357,8 @@ namespace gfx
     // TODO add more types
     switch(t)
     {
+      case gl_byte: return GL_BYTE;
+      case gl_ubyte: return GL_UNSIGNED_BYTE;
       case gl_int: return GL_INT;
       case gl_uint: return GL_UNSIGNED_INT;
       default: return GL_FLOAT; // The initial value is GL_FLOAT. (as in the opengl docs)
@@ -326,6 +373,8 @@ namespace gfx
     // TODO add more types
     switch(t)
     {
+      case gl_byte: return 1;
+      case gl_ubyte: return 1;
       case gl_int: return 1*4;
       case gl_uint: return 1*4;
       case gl_float: return 1*4;
@@ -356,7 +405,15 @@ namespace gfx
     {
       case gl_points: return GL_POINTS;
       case gl_lines:  return GL_LINES;
+      case gl_line_loop: return GL_LINE_LOOP;
+      case gl_line_strip: return GL_LINE_STRIP;
       case gl_triangles: return GL_TRIANGLES;
+      case gl_triangle_strip: return GL_TRIANGLE_STRIP;
+      case gl_triangle_fan: return GL_TRIANGLE_FAN;
+      case gl_lines_adjacency: return GL_LINES_ADJACENCY;
+      case gl_line_strip_adjaceny: return GL_LINE_STRIP_ADJACENCY;
+      case gl_triangles_adjacency: return GL_TRIANGLES_ADJACENCY;
+      case gl_triangle_strip_adjacency: return GL_TRIANGLE_STRIP_ADJACENCY;
     }
     assert(false && "failed to get gl draw mode get");
     return 0;
@@ -372,4 +429,29 @@ namespace gfx
     assert(false);
     return 0;
   }
+
+  u32 gl_format_get(gl_format f)
+  {
+    switch (f)
+    {
+      case gl_red:  return  GL_RED;
+      case gl_rg:  return  GL_RG;
+      case gl_rgb:  return GL_RGB;
+      case gl_bgr:  return  GL_BGR;
+      case gl_rgba: return  GL_RGBA;
+      case gl_bgra: return  GL_BGRA;
+      case gl_red_int: return  GL_RED_INTEGER;
+      case gl_rg_int:  return  GL_RG_INTEGER;
+      case gl_rgb_int: return  GL_RGB_INTEGER;
+      case gl_bgr_int:  return  GL_BGR_INTEGER;
+      case gl_rgba_int: return  GL_RGBA_INTEGER;
+      case gl_bgra_int: return  GL_BGRA_INTEGER;
+      case gl_stencil_id: return  GL_STENCIL_INDEX;
+      case gl_depth_comp: return GL_DEPTH_COMPONENT;
+      case gl_depth_stencil: return GL_DEPTH_STENCIL;
+    }
+    assert(false);
+  }
+
+
 } // namespace gfx

@@ -19,21 +19,12 @@
 #include "utils/mesh_generator.h"
 
 #include "renderer/camera.h"
-#include "renderer/mesh.h"
 #include "renderer/light.h"
+#include "renderer/render_object.h"
 
 #include "gui/gui.h"
 
-float vertices[] = {
-    1.f, 1.f, 0.0f, 0.0f, 1.0f,   // top right
-    1.f, -1.f, 0.0f, 0.0f, 0.0f,  // bottom right
-    -1.f, -1.f, 0.0f, 1.0f, 0.0f, // bottom left
-    -1.f, 1.f, 0.0f, 1.0f, 1.0f   // top left
-};
-
-u32 indices[] = {0, 1, 2, 0, 2, 3};
-
-float dt = 0.f;
+float dt = 0.f; // delta time
 renderer::free_camera_t camera(90, 640.f / 480.f, 0.001f, 100000.f);
 
 void processInput(GLFWwindow *window);
@@ -51,6 +42,7 @@ int main()
   gfx::program_t p_light = gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs");
   gfx::program_t p_material = gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs");
   gfx::program_t p_skybox = gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs");
+  gfx::program_t p_grid = gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs");
 
   gfx::vertex_array_t vao = gfx::vertex_array_ctor();
   // so i am not sure about this design
@@ -64,14 +56,14 @@ int main()
 
   camera.position_ = {-0.15, -0.15, -5};
 
-  renderer::mesh_t perlin_mesh = generate_terrain_mesh(128, 128, {3, 150, 3});
-  renderer::mesh_t skybox_mesh = obj_load_mesh("./res/cube.obj");
-  renderer::mesh_t mesh = obj_load_mesh("./res/cube.obj");
-  //renderer::mesh_t grid_mesh = obj_load_mesh("./res/grid.obj", mesh_loader_properties_vertices | 
-  //                                                             mesh_loader_properties_uvs);
-  //FIXME does not work ^
+  renderer::render_object_t perlin_mesh = generate_terrain_mesh(128, 128, {3, 150, 3});
+  renderer::render_object_t skybox_mesh = obj_load_render_object("./res/cube.obj");
+  renderer::render_object_t mesh = obj_load_render_object("./res/dragon.obj");
+  renderer::render_object_t grid_mesh = obj_load_render_object("./res/grid.obj");
 
-  const char *cubemap_path[] = {
+  //auto dragon = obj_load("./res/dragon.obj");
+
+  std::vector<char *> cubemap_path = {
       "./res/skybox/skybox/right.jpg",
       "./res/skybox/skybox/left.jpg",
       "./res/skybox/skybox/top.jpg",
@@ -85,23 +77,32 @@ int main()
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
 
-
   gui::init(window.window_);
 
   renderer::light_t light_red({5, 0, 0}, {0.2, 0, 0}, 0.06f, 1.f, 512);
 
   glm::mat4 model1(1.f);
+  model1 = glm::scale(model1, {10, 10, 10});
   glm::mat4 model2 = glm::translate(glm::mat4(1.f), {-5, 0, 0});
+  model2 = glm::scale(model2, {5, 5, 5});
   glm::mat4 model_material = glm::translate(model1, {-10, 0, 0});
+  model_material = glm::scale(model_material, { 10, 10, 10});
   glm::mat4 model_grid = glm::scale(model1, {10, 10, 10});
+
+  gfx::framebuffer_t fb = gfx::framebuffer_ctor({
+      gfx::texture_ctor({640, 480, 0, gfx::gl_texture_2d}),
+      (gfx::framebuffer_attachment)(gfx::framebuffer_color_attachment | gfx::framebuffer_depth_attachment) // UGHLY TODO make it look better
+
+  });
 
   while (!glfwWindowShouldClose(window.window_))
   {
-
     processInput(window.window_);
     gfx::clear_color(0.25f, 0.25f, 0.25f);
     gfx::clear(1);
 
+    gfx::bind_framebuffer(fb);
+    glViewport(0, 0, 640, 480);
     float current_frame = glfwGetTime();
     dt = current_frame - last_frame;
     last_frame = current_frame;
@@ -110,7 +111,9 @@ int main()
     glm::mat4 viewproj = camera.get_viewprojection();
 #define skybox
 #define basic_light
-//#define grid
+#define grid
+#define heightmap
+
 #ifdef skybox
     glDepthMask(GL_FALSE);
     gfx::bind_buffer(skybox_mesh.vertex_buffer_);
@@ -155,9 +158,9 @@ int main()
     gfx::draw_elements(gfx::gl_triangles, mesh.index_count_, gfx::gl_uint, 0);
 #endif
 
-static glm::vec3 mat_ambient, mat_diffuse, mat_specular;
-static glm::vec3 light_ambient, light_diffuse, light_specular;
-static float shinnes = 32;
+    static glm::vec3 mat_ambient, mat_diffuse, mat_specular;
+    static glm::vec3 light_ambient, light_diffuse, light_specular;
+    static float shinnes = 32;
 
     gfx::bind_buffer(mesh.vertex_buffer_);
     gfx::bind_buffer(mesh.index_buffer_);
@@ -175,22 +178,21 @@ static float shinnes = 32;
     gfx::set_uniform_vec3(p_material, "u_light.ambient", light_ambient);
     gfx::set_uniform_vec3(p_material, "u_light.diffuse", light_diffuse);
     gfx::set_uniform_vec3(p_material, "u_light.specular", light_specular);
-    
+
     gfx::draw_elements(gfx::gl_triangles, mesh.index_count_, gfx::gl_uint, 0);
 
-
 #ifdef grid
-//FIXME does not work
     gfx::bind_buffer(grid_mesh.vertex_buffer_);
     gfx::bind_buffer(grid_mesh.index_buffer_);
-    gfx::vertex_array_set_layout({{gfx::gl_float3}, {gfx::gl_float2}});
-    gfx::bind_program(p_perlin_mesh);
-    gfx::set_uniform_mat4(p_perlin_mesh, "u_view", camera.view_);
-    gfx::set_uniform_mat4(p_perlin_mesh, "u_proj", camera.projection_);
-    gfx::set_uniform_mat4(p_perlin_mesh, "u_model", model_grid);
-    gfx::draw_elements(gfx::gl_lines, grid_mesh.index_count_, gfx::gl_uint, 0);
+    gfx::vertex_array_set_layout({{gfx::gl_float3}, {gfx::gl_float2}, {gfx::gl_float3}});
+    gfx::bind_program(p_grid);
+    gfx::set_uniform_mat4(p_grid, "u_view", camera.view_);
+    gfx::set_uniform_mat4(p_grid, "u_proj", camera.projection_);
+    gfx::set_uniform_mat4(p_grid, "u_model", model_grid);
+    gfx::draw_elements(gfx::gl_line_loop, grid_mesh.index_count_, gfx::gl_uint, 0);
 #endif
 
+    gfx::bind_framebuffer({0});
 
     gui::begin();
     if (ImGui::Begin("Terrain"))
@@ -218,9 +220,9 @@ static float shinnes = 32;
       ImGui::End();
     }
 
-    if(ImGui::Begin("Material"))
+    if (ImGui::Begin("Material"))
     {
-      
+
       ImGui::ColorEdit3("M_ambient", glm::value_ptr(mat_ambient));
       ImGui::ColorEdit3("M_diffuse", glm::value_ptr(mat_diffuse));
       ImGui::ColorEdit3("M_specular", glm::value_ptr(mat_specular));
@@ -228,6 +230,16 @@ static float shinnes = 32;
       ImGui::ColorEdit3("L_diffuse", glm::value_ptr(light_diffuse));
       ImGui::ColorEdit3("L_specular", glm::value_ptr(light_specular));
       ImGui::InputFloat("Shinnes", &shinnes);
+      ImGui::End();
+    }
+
+    if (ImGui::Begin("Viewport"))
+    {
+      ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+      ImVec2 m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
+      ImTextureID my_tex_id = (void *)fb.texture_.texture_;
+      ImGui::Image(my_tex_id, m_ViewportSize, ImVec2{0, 1}, ImVec2{1, 0});
+
       ImGui::End();
     }
 
@@ -257,7 +269,6 @@ void processInput(GLFWwindow *window)
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   else
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    
 }
 
 float lastX = 400, lastY = 300;

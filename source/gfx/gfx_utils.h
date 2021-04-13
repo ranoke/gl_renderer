@@ -13,22 +13,41 @@
 
 #include <GL/glew.h>
 
-// here will be read shader and so on...
 namespace gfx_utils
 {
 
-  
-  gfx::texture_t texture_load_cubemap(const char** path)
+  gfx::texture_t texture_load(const std::string &path)
+  {
+    gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_2d};
+
+    // TODO switch for channels and formats of texture
+
+    int channels;
+    desc.data_ = stbi_load(path.c_str(), (int*)&desc.width_, (int*)&desc.height_, &channels, 0);
+
+    gfx::texture_t t = gfx::texture_ctor(desc, false);
+
+    stbi_image_free(desc.data_);
+
+    return t;
+  }
+
+  //
+  //
+  // currently every image should be the same size
+  // load in this order:
+  // right, left, top, bottom, front, back
+  gfx::texture_t texture_load_cubemap(const std::vector<char *> &path)
   {
     gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_cubemap};
-    i32 w,h,c;
-    desc.data_ = malloc(6*sizeof(void*));
+    i32 w, h, c;
+    desc.data_ = malloc(6 * sizeof(void *));
 
-    void** data = (void**)desc.data_;
-    for(int i = 0; i < 6; i++)
+    void **data = (void **)desc.data_;
+    for (int i = 0; i < 6; i++)
     {
       data[i] = stbi_load(path[i], &w, &h, &c, 0);
-      if(data[i] == NULL)
+      if (data[i] == NULL)
       {
         assert(false);
         return (gfx::texture_t){0, (gfx::gl_texture_type)0};
@@ -38,7 +57,7 @@ namespace gfx_utils
     desc.height_ = h;
     gfx::texture_t t = gfx::texture_ctor(desc, false);
 
-    for(int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; i++)
     {
       stbi_image_free(data[i]);
     }
@@ -49,11 +68,11 @@ namespace gfx_utils
   }
 
   // loads 2d texture
-  gfx::texture_t texture_load(const char* path)
+  gfx::texture_t texture_load(const char *path)
   {
-    int w,h,c;
-    void* data = stbi_load(path, &w, &h, &c, 0);
-    if(data == NULL)
+    int w, h, c;
+    void *data = stbi_load(path, &w, &h, &c, 0);
+    if (data == NULL)
     {
       assert(false && "failed to load texture");
       return (gfx::texture_t){0};
@@ -64,8 +83,8 @@ namespace gfx_utils
     return t;
   }
 
-  // shader 
-  gfx::program_t program_load(const char* vertex_path, const char* fragment_path)
+  // shader
+  gfx::program_t program_load(const char *vertex_path, const char *fragment_path)
   {
     std::ifstream vertex_file(vertex_path);
     std::ifstream fragment_file(fragment_path);
@@ -73,7 +92,7 @@ namespace gfx_utils
     {
       std::stringstream ss;
       std::string line;
-      while(getline(vertex_file, line))
+      while (getline(vertex_file, line))
       {
         ss << line << "\n";
       }
@@ -83,7 +102,7 @@ namespace gfx_utils
     {
       std::stringstream ss;
       std::string line;
-      while(getline(fragment_file, line))
+      while (getline(fragment_file, line))
       {
         ss << line << "\n";
       }
