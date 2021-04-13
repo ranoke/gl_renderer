@@ -231,8 +231,8 @@ namespace gfx
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     auto tex = texture_ctor({
-      640,
-      480,
+      desc.width_,
+      desc.height_,
       0,
       gl_texture_2d
     }, false);

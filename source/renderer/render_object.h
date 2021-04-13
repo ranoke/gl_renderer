@@ -45,6 +45,7 @@ namespace renderer
     render_object_t(const render_object_t& other)
     {
       memcpy(this, &other, sizeof(render_object_t));
+      memset((void*)&other, 0, sizeof(render_object_t));
     }
     render_object_t(render_object_t&& other)
       : path_ (std::move(other.path_))
@@ -55,7 +56,11 @@ namespace renderer
     {
     }
 
-    render_object_t& operator=(const render_object_t& other) = delete;
+    render_object_t& operator=(const render_object_t& other)
+    {
+      memcpy(this, &other, sizeof(render_object_t));
+      memset((void*)&other, 0, sizeof(render_object_t));
+    }
     render_object_t& operator=(render_object_t&& other)
     {
       path_ = std::move(other.path_);

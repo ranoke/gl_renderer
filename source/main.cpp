@@ -22,6 +22,8 @@
 #include "renderer/light.h"
 #include "renderer/render_object.h"
 
+#include "scene/mesh.h"
+
 #include "gui/gui.h"
 
 float dt = 0.f; // delta time
@@ -90,11 +92,14 @@ int main()
   glm::mat4 model_grid = glm::scale(model1, {10, 10, 10});
 
   gfx::framebuffer_t fb = gfx::framebuffer_ctor({
-      gfx::texture_ctor({640, 480, 0, gfx::gl_texture_2d}),
+      640, 480,
       (gfx::framebuffer_attachment)(gfx::framebuffer_color_attachment | gfx::framebuffer_depth_attachment) // UGHLY TODO make it look better
 
   });
 
+  scene::mesh_t my_test_mesh;
+  my_test_mesh.mesh_ = { {{0,0,0},{0,0,0},{1,1,1},obj_load_render_object("./res/dragon.obj")}};
+  my_test_mesh.position_ = {0, 100, 100};
   while (!glfwWindowShouldClose(window.window_))
   {
     processInput(window.window_);
@@ -191,6 +196,8 @@ int main()
     gfx::set_uniform_mat4(p_grid, "u_model", model_grid);
     gfx::draw_elements(gfx::gl_line_loop, grid_mesh.index_count_, gfx::gl_uint, 0);
 #endif
+
+    //my_test_mesh.render(p_default, camera);
 
     gfx::bind_framebuffer({0});
 

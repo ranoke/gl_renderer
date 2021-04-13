@@ -14,7 +14,7 @@ out vec3 normal;
 
 void main()
 {
-  gl_Position = u_proj*u_view*vec4(a_pos, 1.0); // see how we directly give a vec3 to vec4's constructor
+  gl_Position = u_proj*u_view*u_model*vec4(a_pos, 1.0); // see how we directly give a vec3 to vec4's constructor
   uv = a_uv;
   normal = a_normal;
 }

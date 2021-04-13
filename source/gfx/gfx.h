@@ -168,7 +168,8 @@ namespace gfx
 
   struct framebuffer_desc_t
   {
-    texture_t texture_;
+    u32 width_;
+    u32 height_;
     framebuffer_attachment attachment_ = zero_enum(framebuffer_attachment);
   };
 
