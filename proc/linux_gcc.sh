@@ -21,12 +21,13 @@ src=(
 	../source/main.cpp
   ../source/window.cpp
   ../source/gfx/gfx.cpp
-  ../source/utils/tiny_obj_loader.cpp
+  ../source/gfx/gfx_utils.cpp
   ../source/gui/gui.cpp
   ../source/utils/stb_image.cpp
   ../source/utils/stb_perlin.cpp
   ../source/utils/stb_leakcheck.cpp
   ../source/utils/stb_include.cpp
+  ../source/utils/tiny_obj_loader.cpp
 
   # imgui
   ../third_party/imgui/imgui_demo.cpp

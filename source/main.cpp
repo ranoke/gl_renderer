@@ -14,9 +14,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "utils/mesh_loader.h"
+#include "utils/object_loader.h"
+#include "utils/object_generator.h"
 #include "utils/stb_perlin.h"
-#include "utils/mesh_generator.h"
 
 #include "renderer/camera.h"
 #include "renderer/light.h"
@@ -58,7 +58,7 @@ int main()
 
   camera.position_ = {-0.15, -0.15, -5};
 
-  renderer::render_object_t perlin_mesh = generate_terrain_mesh(128, 128, {3, 150, 3});
+  renderer::render_object_t perlin_mesh = generate_terrain(128, 128, {3, 150, 3});
   renderer::render_object_t skybox_mesh = obj_load_render_object("./res/cube.obj");
   renderer::render_object_t mesh = obj_load_render_object("./res/dragon.obj");
   renderer::render_object_t grid_mesh = obj_load_render_object("./res/grid.obj");
@@ -209,7 +209,7 @@ int main()
       static f32 octaves = 1.f, lacunarity = 1.f, gain = 1.f;
       if (ImGui::Button("Generate"))
       {
-        perlin_mesh = generate_terrain_mesh(terrain_size[0], terrain_size[1], terrain_scale, octaves, lacunarity, gain);
+        perlin_mesh = generate_terrain(terrain_size[0], terrain_size[1], terrain_scale, octaves, lacunarity, gain);
       }
       ImGui::InputInt2("W/H", terrain_size);
       ImGui::DragFloat3("Scale", glm::value_ptr(terrain_scale), 1, 300);

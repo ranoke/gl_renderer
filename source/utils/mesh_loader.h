@@ -1,20 +1,17 @@
-#ifndef __MESH_LOADER_H__
-#define __MESH_LOADER_H__
+#ifndef __MESH_LOADER_H_
+#define __MESH_LOADER_H_
 
-#include "base/base.h"
 #include "gfx/gfx.h"
-#include "renderer/render_object.h"
+#include "gfx/gfx_utils.h"
 
-#include "tiny_obj_loader.h"
+#include "scene/mesh.h"
+#include "utils/tiny_obj_loader.h"
 
+#include <iostream>
 
-#include <string>
-#include <utility>
-
-std::vector<renderer::render_object_t>
-obj_load(const std::string& path)
+scene::mesh_t obj_load_mesh(const std::string& path)
 {
-	std::vector<renderer::render_object_t> objs;
+  scene::mesh_t obj;
 
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -43,77 +40,70 @@ obj_load(const std::string& path)
   printf("# of materials = %d\n", (int)materials.size());
   printf("# of shapes    = %d\n", (int)shapes.size());
 
-	assert(false && "write implementation");
+  // Append `default` material
+  materials.push_back(tinyobj::material_t());
+
+  for (size_t i = 0; i < materials.size(); i++) {
+    printf("material[%d].diffuse_texname = %s\n", int(i),
+           materials[i].diffuse_texname.c_str());
+  }
+
+  // Load diffuse textures
+  // {
+  //   for (size_t m = 0; m < materials.size(); m++) {
+  //     tinyobj::material_t* mp = &materials[m];
+
+  //     if (mp->diffuse_texname.length() > 0) {
+  //       // Only load the texture if it is not already loaded
+  //       if (textures.find(mp->diffuse_texname) == textures.end()) {
+  //         GLuint texture_id;
+  //         int w, h;
+  //         int comp;
+
+  //         std::string texture_filename = mp->diffuse_texname;
+  //         if (!FileExists(texture_filename)) {
+  //           // Append base dir.
+  //           texture_filename = base_dir + mp->diffuse_texname;
+  //           if (!FileExists(texture_filename)) {
+  //             std::cerr << "Unable to find file: " << mp->diffuse_texname
+  //                       << std::endl;
+  //             exit(1);
+  //           }
+  //         }
+
+  //         unsigned char* image =
+  //             stbi_load(texture_filename.c_str(), &w, &h, &comp, STBI_default);
+  //         if (!image) {
+  //           std::cerr << "Unable to load texture: " << texture_filename
+  //                     << std::endl;
+  //           exit(1);
+  //         }
+  //         std::cout << "Loaded texture: " << texture_filename << ", w = " << w
+  //                   << ", h = " << h << ", comp = " << comp << std::endl;
+
+  //         glGenTextures(1, &texture_id);
+  //         glBindTexture(GL_TEXTURE_2D, texture_id);
+  //         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  //         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  //         if (comp == 3) {
+  //           glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB,
+  //                        GL_UNSIGNED_BYTE, image);
+  //         } else if (comp == 4) {
+  //           glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+  //                        GL_UNSIGNED_BYTE, image);
+  //         } else {
+  //           assert(0);  // TODO
+  //         }
+  //         glBindTexture(GL_TEXTURE_2D, 0);
+  //         stbi_image_free(image);
+  //         textures.insert(std::make_pair(mp->diffuse_texname, texture_id));
+  //       }
+  //     }
+  //   }
+  // }
+
 	// TODO
-	return objs;
+	return obj;
 }
 
-// HACK // TODO 
-// not even a mesh - just a renderer thingy that i can draw
-renderer::render_object_t
-obj_load_render_object(const std::string &path)
-{
-	struct vertex_t
-	{
-		glm::vec3 position_;
-		glm::vec2 uv_;
-		glm::vec3 normal_;
-	};
-
-	tinyobj::attrib_t attrib;
-	std::vector<tinyobj::shape_t> shapes;
-	std::vector<tinyobj::material_t> materials;
-	std::string warn;
-	std::string err;
-	bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(),
-															"./", true);
-
-	std::vector<vertex_t> vertices;
-	std::vector<u32> indices;
-
-	for (const auto &shape : shapes)
-	{
-		for (const auto &index : shape.mesh.indices)
-		{
-			vertex_t v;
-			v.position_ = {
-					attrib.vertices[3 * index.vertex_index + 0],
-					attrib.vertices[3 * index.vertex_index + 1],
-					attrib.vertices[3 * index.vertex_index + 2]};
-			v.normal_ = {
-					attrib.normals[3 * index.vertex_index + 0],
-					attrib.normals[3 * index.vertex_index + 1],
-					attrib.normals[3 * index.vertex_index + 2]};
-			if(attrib.texcoords.size())
-			{
-				v.uv_ = {
-						attrib.texcoords[2 * index.vertex_index + 0],
-						attrib.texcoords[2 * index.vertex_index + 1],
-				};
-			}
-
-			vertices.push_back(v);
-			indices.push_back(indices.size());
-		}
-	}
-	gfx::buffer_desc_t vbo_desc = {
-		vertices.size()*sizeof(vertex_t),
-		vertices.data(),
-		gfx::vertex_buffer
-	};
-	gfx::buffer_t vbo = gfx::buffer_ctor(vbo_desc);
-
-	gfx::buffer_desc_t ibo_desc = {
-		indices.size() * sizeof(u32),
-		indices.data(),
-		gfx::index_buffer
-	};
-	gfx::buffer_t ibo = gfx::buffer_ctor(ibo_desc);
-
-	std::vector<gfx::texture_t> textures; // TODO add texture loading
-	
-
-	return { path, vbo, ibo, indices.size(), {} };
-}
-
-#endif // __MESH_LOADER_H__
+#endif // __MESH_LOADER_H_

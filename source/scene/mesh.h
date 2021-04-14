@@ -67,6 +67,8 @@ namespace scene
     std::vector<submesh_t> mesh_;
   };
 
+
+
 } // namespace scene
 
 #endif // __MESH_H_
