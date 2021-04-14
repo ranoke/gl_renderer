@@ -15,6 +15,7 @@ inc=(
   -I ../source/
 	-I ../third_party/include/
   -I ../third_party/imgui/
+  -I ../third_party/flecs/
 )
 
 src=(
@@ -35,6 +36,9 @@ src=(
   ../third_party/imgui/imgui_tables.cpp
   ../third_party/imgui/imgui_widgets.cpp
   ../third_party/imgui/imgui.cpp
+
+  # flecs
+  ../third_party/flecs/flecs.c
 )
 
 defines=(

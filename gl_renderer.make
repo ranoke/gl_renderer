@@ -19,7 +19,7 @@ endif
 # #############################################
 
 RESCOMP = windres
-INCLUDES += -Isource -Ithird_party/imgui -I/third_party/imgui
+INCLUDES += -Isource -Ithird_party/imgui -I/third_party/imgui -I/third_party/flecs
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
@@ -72,6 +72,7 @@ endif
 GENERATED :=
 OBJECTS :=
 
+GENERATED += $(OBJDIR)/flecs.o
 GENERATED += $(OBJDIR)/gfx.o
 GENERATED += $(OBJDIR)/gfx_utils.o
 GENERATED += $(OBJDIR)/gui.o
@@ -87,6 +88,7 @@ GENERATED += $(OBJDIR)/stb_leakcheck.o
 GENERATED += $(OBJDIR)/stb_perlin.o
 GENERATED += $(OBJDIR)/tiny_obj_loader.o
 GENERATED += $(OBJDIR)/window.o
+OBJECTS += $(OBJDIR)/flecs.o
 OBJECTS += $(OBJDIR)/gfx.o
 OBJECTS += $(OBJDIR)/gfx_utils.o
 OBJECTS += $(OBJDIR)/gui.o
@@ -195,6 +197,9 @@ $(OBJDIR)/tiny_obj_loader.o: source/utils/tiny_obj_loader.cpp
 $(OBJDIR)/window.o: source/window.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/flecs.o: third_party/flecs/flecs.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui.o: third_party/imgui/imgui.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"

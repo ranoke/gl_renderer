@@ -7,11 +7,13 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["imgui"] = "/third_party/imgui"
+IncludeDir["flecs"] = "/third_party/flecs"
 
 
 includedirs
 {
   "/third_party/imgui",
+  "/third_party/flecs",
 }
 
 project "gl_renderer"
@@ -42,13 +44,17 @@ project "gl_renderer"
       "third_party/imgui/imgui_tables.cpp",
       "third_party/imgui/imgui_widgets.cpp",
       "third_party/imgui/imgui.cpp",
+
+      -- flecs
+      "third_party/flecs/flecs.c",
     }
 
     includedirs
     {
       "source",
       "third_party/imgui",
-      "%{IncludeDir.imgui}"
+      "%{IncludeDir.imgui}",
+      "%{IncludeDir.flecs}"
     }
 
     defines
