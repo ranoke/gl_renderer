@@ -4,3 +4,5 @@ no raytracing anymore
 1024x1024
 ![alt text](https://raw.githubusercontent.com/ranoke/gl_renderer/main/screenshots/1024x1024_heightmap.png)
 
+![alt text](https://raw.githubusercontent.com/ranoke/gl_renderer/main/screenshots/dragon_material_almost_xd.png)
+
