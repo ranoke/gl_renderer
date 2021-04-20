@@ -47,7 +47,7 @@ namespace scene
         gfx::set_uniform_mat4(shader, "u_proj", camera.projection_);
         gfx::set_uniform_mat4(shader, "u_model", model);
 
-        gfx::draw_elements(gfx::gl_triangles, sm.render_object_.index_count_, gfx::gl_uint, 0);
+        gfx::draw_elements(gfx::gl_draw_mode::triangles, sm.render_object_.index_count_, gfx::gl_uint, 0);
       }
     }
 

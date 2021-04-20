@@ -76,19 +76,22 @@ obj_load_render_object(const std::string &path)
 		for (const auto &index : shape.mesh.indices)
 		{
 			vertex_t v;
+			const auto v_id  = index.vertex_index;
+			const auto n_id  = index.normal_index;
+			const auto uv_id = index.texcoord_index;
 			v.position_ = {
-					attrib.vertices[index.vertex_index*3 + 0],
-					attrib.vertices[index.vertex_index*3 + 1],
-					attrib.vertices[index.vertex_index*3 + 2]};
+					attrib.vertices[v_id * 3 + 0],
+					attrib.vertices[v_id * 3 + 1],
+					attrib.vertices[v_id * 3 + 2]};
 			v.normal_ = {
-					attrib.normals[index.normal_index*3 + 0],
-					attrib.normals[index.normal_index *3 + 1],
-					attrib.normals[index.normal_index *3 + 2]};
+					attrib.normals[n_id * 3 + 0],
+					attrib.normals[n_id * 3 + 1],
+					attrib.normals[n_id * 3 + 2]};
 			if(attrib.texcoords.size())
 			{
 				v.uv_ = {
-						attrib.texcoords[index.texcoord_index*2 + 0],
-						attrib.texcoords[index.texcoord_index*2 + 1],
+						attrib.texcoords[uv_id*2 + 0],
+						attrib.texcoords[uv_id*2 + 1],
 				};
 			}
 
@@ -99,14 +102,14 @@ obj_load_render_object(const std::string &path)
 	gfx::buffer_desc_t vbo_desc = {
 		vertices.size()*sizeof(vertex_t),
 		vertices.data(),
-		gfx::vertex_buffer
+		gfx::buffer_type::vertex_buffer
 	};
 	gfx::buffer_t vbo = gfx::buffer_ctor(vbo_desc);
 
 	gfx::buffer_desc_t ibo_desc = {
 		indices.size() * sizeof(u32),
 		indices.data(),
-		gfx::index_buffer
+		gfx::buffer_type::index_buffer
 	};
 	gfx::buffer_t ibo = gfx::buffer_ctor(ibo_desc);
 

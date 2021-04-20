@@ -27,55 +27,54 @@
 #include "gui/gui.h"
 
 float dt = 0.f; // delta time
-renderer::free_camera_t camera(90, 640.f / 480.f, 0.001f, 100000.f);
+renderer::free_camera_t camera(90, 640.f / 480.f, 0.001f, 10000.f);
 
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
-float camera_speed = 0.5f; // adjust accordingly
-
+float camera_speed = 0.5f; 
 int main()
 {
   window_t window("gl_renderer", 640, 480);
   gfx::init();
 
-  gfx::program_t p_default = gfx_utils::program_load("./res/shaders/default.vs", "./res/shaders/default.fs");
-  gfx::program_t p_perlin_mesh = gfx_utils::program_load("./res/shaders/perlin_mesh.vs", "./res/shaders/perlin_mesh.fs");
-  gfx::program_t p_light = gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs");
-  gfx::program_t p_material = gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs");
-  gfx::program_t p_skybox = gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs");
-  gfx::program_t p_grid = gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs");
+	gfx::program_t p_default = gfx_utils::program_load("./res/shaders/default.vs", "./res/shaders/default.fs");
+	gfx::program_t p_perlin_mesh = gfx_utils::program_load("./res/shaders/perlin_mesh.vs", "./res/shaders/perlin_mesh.fs");
+	gfx::program_t p_light = gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs");
+	gfx::program_t p_material = gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs");
+	gfx::program_t p_skybox = gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs");
+	gfx::program_t p_grid = gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs");
 
   gfx::vertex_array_t vao = gfx::vertex_array_ctor();
-  // so i am not sure about this design
-  // maybe i will change it later to something else
-  // that requieres less number of lines
+  //// so i am not sure about this design
+  //// maybe i will change it later to something else
+  //// that requieres less number of lines
   gfx::bind_vertex_array(vao);
 
   glfwSetCursorPosCallback(window.window_, mouse_callback);
 
   float last_frame = 0.0f;
 
-  camera.position_ = {-0.15, -0.15, -5};
+  //camera.position_ = {-0.15, -0.15, -5};
 
-  
+  //
 
-  renderer::render_object_t perlin_mesh = generate_terrain(128, 128, {3, 150, 3});
-  renderer::render_object_t skybox_mesh = obj_load_render_object("./res/cube.obj");
-  renderer::render_object_t mesh = obj_load_render_object("./res/dragon.obj");
-  renderer::render_object_t grid_mesh = obj_load_render_object("./res/grid.obj");
+	renderer::render_object_t perlin_mesh = generate_terrain(1024, 1024, { 3, 150, 3 });
+	renderer::render_object_t skybox_mesh = obj_load_render_object("./res/cube.obj");
+	renderer::render_object_t mesh = obj_load_render_object("./res/cube.obj");
+	renderer::render_object_t grid_mesh = obj_load_render_object("./res/grid.obj");
 
-  //auto dragon = obj_load("./res/dragon.obj");
+  ////auto dragon = obj_load("./res/dragon.obj");
 
-  const std::vector<const char *> cubemap_path = {
-      "./res/skybox/skybox/right.jpg",
-      "./res/skybox/skybox/left.jpg",
-      "./res/skybox/skybox/top.jpg",
-      "./res/skybox/skybox/bottom.jpg",
-      "./res/skybox/skybox/front.jpg",
-      "./res/skybox/skybox/back.jpg"};
+	const std::vector<const char*> cubemap_path = {
+			"./res/skybox/skybox/right.jpg",
+			"./res/skybox/skybox/left.jpg",
+			"./res/skybox/skybox/top.jpg",
+			"./res/skybox/skybox/bottom.jpg",
+			"./res/skybox/skybox/front.jpg",
+			"./res/skybox/skybox/back.jpg" };
 
-  auto cube_map = gfx_utils::texture_load_cubemap(cubemap_path);
+	auto cube_map = gfx_utils::texture_load_cubemap(cubemap_path);
 
   glCullFace(GL_BACK);
   glEnable(GL_DEPTH_TEST);
@@ -83,58 +82,55 @@ int main()
 
   gui::init(window.window_);
 
-  renderer::light_t light_red({5, 0, 0}, {0.2, 0, 0}, 0.06f, 1.f, 512);
+	renderer::light_t light_red({ 5, 0, 0 }, { 0.2, 0, 0 }, 0.06f, 1.f, 512);
 
-  glm::mat4 model1(1.f);
-  model1 = glm::scale(model1, {10, 10, 10});
-  glm::mat4 model2 = glm::translate(glm::mat4(1.f), {-5, 0, 0});
-  model2 = glm::scale(model2, {5, 5, 5});
-  glm::mat4 model_material = glm::translate(model1, {-10, 0, 0});
-  model_material = glm::scale(model_material, { 10, 10, 10});
-  glm::mat4 model_grid = glm::scale(model1, {10, 10, 10});
+	glm::mat4 model1(1.f);
+	model1 = glm::scale(model1, { 10, 10, 10 });
+	glm::mat4 model2 = glm::translate(glm::mat4(1.f), { -5, 0, 0 });
+	model2 = glm::scale(model2, { 5, 5, 5 });
+	glm::mat4 model_material = glm::translate(model1, { -10, 0, 0 });
+	model_material = glm::scale(model_material, { 10, 10, 10 });
+	glm::mat4 model_grid = glm::scale(model1, { 10, 10, 10 });
 
   gfx::framebuffer_t fb = gfx::framebuffer_ctor({
-      640, 480,
-      (gfx::framebuffer_attachment)(gfx::framebuffer_color_attachment | gfx::framebuffer_depth_attachment) // UGHLY TODO make it look better
+      640, 480, gfx::framebuffer_attachment::framebuffer_color_attachment });
 
-  });
-
-  scene::mesh_t my_test_mesh;
-  my_test_mesh.mesh_ = { {{0,0,0},{0,0,0},{1,1,1},obj_load_render_object("./res/dragon.obj")}};
-  my_test_mesh.position_ = {0, 100, 100};
+  //scene::mesh_t my_test_mesh;
+  //my_test_mesh.mesh_ = { {{0,0,0},{0,0,0},{1,1,1},obj_load_render_object("./res/dragon.obj")}};
+  //my_test_mesh.position_ = {0, 100, 100};
   while (!glfwWindowShouldClose(window.window_))
   {
-    processInput(window.window_);
-    gfx::clear_color(0.25f, 0.25f, 0.25f);
-    gfx::clear(1);
+		processInput(window.window_);
+		gfx::clear_color(0.25f, 0.25f, 0.25f);
+		gfx::clear(1);
 
-    gfx::bind_framebuffer(fb);
-    glViewport(0, 0, 640, 480);
-    float current_frame = glfwGetTime();
-    dt = current_frame - last_frame;
-    last_frame = current_frame;
+		gfx::bind_framebuffer(fb);
+		glViewport(0, 0, 640, 480);
+		f32 current_frame = static_cast<f32>(glfwGetTime());
+		dt = current_frame - last_frame;
+		last_frame = current_frame;
 
-    camera.update_view();
-    glm::mat4 viewproj = camera.get_viewprojection();
+		camera.update_view();
+		glm::mat4 viewproj = camera.get_viewprojection();
 #define skybox
 #define basic_light
 #define grid
 #define heightmap
 
 #ifdef skybox
-    glDepthMask(GL_FALSE);
-    gfx::bind_buffer(skybox_mesh.vertex_buffer_);
-    gfx::bind_buffer(skybox_mesh.index_buffer_);
-    gfx::vertex_array_set_layout({{gfx::gl_float3},
-                                  {gfx::gl_float2},
-                                  {gfx::gl_float3}});
-    gfx::bind_program(p_skybox);
-    gfx::bind_texture(cube_map, 0);
-    gfx::set_uniform_mat4(p_skybox, "u_view", glm::mat4(glm::mat3(camera.view_)));
-    gfx::set_uniform_mat4(p_skybox, "u_proj", camera.projection_);
-    gfx::set_uniform_int(p_skybox, "skybox", 0);
-    gfx::draw_elements(gfx::gl_triangles, skybox_mesh.index_count_, gfx::gl_uint, 0);
-    glDepthMask(GL_TRUE);
+		glDepthMask(GL_FALSE);
+		gfx::bind_buffer(skybox_mesh.vertex_buffer_);
+		gfx::bind_buffer(skybox_mesh.index_buffer_);
+		gfx::vertex_array_set_layout({ {gfx::gl_float3},
+																	{gfx::gl_float2},
+																	{gfx::gl_float3} });
+		gfx::bind_program(p_skybox);
+		gfx::bind_texture(cube_map, 0);
+		gfx::set_uniform_mat4(p_skybox, "u_view", glm::mat4(glm::mat3(camera.view_)));
+		gfx::set_uniform_mat4(p_skybox, "u_proj", camera.projection_);
+		gfx::set_uniform_int(p_skybox, "skybox", 0);
+		gfx::draw_elements(gfx::gl_draw_mode::triangles, skybox_mesh.index_count_, gfx::gl_uint, 0);
+		glDepthMask(GL_TRUE);
 #endif
 #ifdef heightmap
     gfx::bind_buffer(perlin_mesh.vertex_buffer_);
@@ -144,7 +140,7 @@ int main()
     gfx::set_uniform_mat4(p_perlin_mesh, "u_view", camera.view_);
     gfx::set_uniform_mat4(p_perlin_mesh, "u_proj", camera.projection_);
     gfx::set_uniform_mat4(p_perlin_mesh, "u_model", model2);
-    gfx::draw_elements(gfx::gl_lines, perlin_mesh.index_count_, gfx::gl_uint, 0);
+    gfx::draw_elements(gfx::gl_draw_mode::lines, perlin_mesh.index_count_, gfx::gl_uint, 0);
 #endif
 
 #ifdef basic_light
@@ -162,7 +158,7 @@ int main()
     gfx::set_uniform_float(p_light, "u_ambient_strength", light_red.ambient_strength_);
     gfx::set_uniform_float(p_light, "u_specular_strength", light_red.specular_strength_);
     gfx::set_uniform_int(p_light, "u_resolution", light_red.resolution_);
-    gfx::draw_elements(gfx::gl_triangles, mesh.index_count_, gfx::gl_uint, 0);
+    gfx::draw_elements(gfx::gl_draw_mode::triangles, mesh.index_count_, gfx::gl_uint, 0);
 #endif
 
     static glm::vec3 mat_ambient, mat_diffuse, mat_specular;
@@ -186,7 +182,7 @@ int main()
     gfx::set_uniform_vec3(p_material, "u_light.diffuse", light_diffuse);
     gfx::set_uniform_vec3(p_material, "u_light.specular", light_specular);
 
-    gfx::draw_elements(gfx::gl_triangles, mesh.index_count_, gfx::gl_uint, 0);
+    gfx::draw_elements(gfx::gl_draw_mode::triangles, mesh.index_count_, gfx::gl_uint, 0);
 
 #ifdef grid
     gfx::bind_buffer(grid_mesh.vertex_buffer_);
@@ -196,7 +192,7 @@ int main()
     gfx::set_uniform_mat4(p_grid, "u_view", camera.view_);
     gfx::set_uniform_mat4(p_grid, "u_proj", camera.projection_);
     gfx::set_uniform_mat4(p_grid, "u_model", model_grid);
-    gfx::draw_elements(gfx::gl_line_loop, grid_mesh.index_count_, gfx::gl_uint, 0);
+    gfx::draw_elements(gfx::gl_draw_mode::line_strip, grid_mesh.index_count_, gfx::gl_uint, 0);
 #endif
 
     //my_test_mesh.render(p_default, camera);
@@ -246,7 +242,7 @@ int main()
     {
       ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
       ImVec2 m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
-      ImTextureID my_tex_id = (void *)fb.texture_.texture_;
+      ImTextureID my_tex_id = (ImTextureID)(static_cast<u64>(fb.texture_.texture_));
       ImGui::Image(my_tex_id, m_ViewportSize, ImVec2{0, 1}, ImVec2{1, 0});
 
       ImGui::End();
@@ -280,17 +276,17 @@ void processInput(GLFWwindow *window)
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-float lastX = 400, lastY = 300;
-void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+f32 lastX = 400, lastY = 300;
+void mouse_callback(GLFWwindow *window, f64 xpos, f64 ypos)
 {
-  float &yaw = camera.rotation_.x;
-  float &pitch = camera.rotation_.y;
-  float xoffset = xpos - lastX;
-  float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
-  lastX = xpos;
-  lastY = ypos;
+  f32& yaw = camera.rotation_.x;
+  f32& pitch = camera.rotation_.y;
+  f32 xoffset = static_cast<f32>(xpos) - lastX;
+  f32 yoffset = lastY - static_cast<f32>(ypos); // reversed since y-coordinates range from bottom to top
+  lastX = static_cast<f32>(xpos);
+  lastY = static_cast<f32>(ypos);
 
-  const float sensitivity = 0.1f;
+  const f32 sensitivity = 0.1;
   xoffset *= sensitivity;
   yoffset *= sensitivity;
 

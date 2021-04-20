@@ -11,13 +11,13 @@
 
 namespace gfx
 {
-  u32 gl_type_components_count(gl_type t);
-  u32 gl_type_get(gl_type t);
-  u32 gl_type_size(gl_type t);
-  u32 gl_buffer_type(buffer_type t);
-  u32 gl_draw_mode_get(gl_draw_mode m);
-  u32 gl_texture_type_get(gl_texture_type t);
-  u32 gl_format_get(gl_format f);
+  static constexpr u32 gl_type_components_count(gl_type t);
+  static constexpr u32 gl_type_get(gl_type t);
+  static constexpr u32 gl_type_size(gl_type t);
+  static constexpr u32 gl_buffer_type(buffer_type t);
+  static constexpr u32 gl_draw_mode_get(gl_draw_mode m);
+  static constexpr u32 gl_texture_type_get(gl_texture_type t);
+  static constexpr u32 gl_format_get(gl_format f);
   
 
   vertex_buffer_layout_object_t::vertex_buffer_layout_object_t(gl_type type, bool normalized)
@@ -87,7 +87,7 @@ namespace gfx
         gl_type_get(i.type_),
         i.normalized_, 
         layout.stride_, 
-        (const void*)offset
+        reinterpret_cast<const void*>((u64)offset)
       );
       glEnableVertexAttribArray(a);
       offset += i.size_;
@@ -191,14 +191,14 @@ namespace gfx
 
     switch (desc.texture_type_)
     {
-      case gl_texture_2d: {
+      case gl_texture_type::texture_2d: {
       glTexImage2D(texture_type, 0, internal_format, desc.width_, desc.height_, 0, format, data_type, desc.data_);
       glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
       glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       glTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       } break;
-      case gl_texture_cubemap: {
+      case gl_texture_type::texture_cubemap: {
       void** data = (void**)desc.data_;
       for(int i = 0; i < 6; i++)
       {
@@ -214,7 +214,7 @@ namespace gfx
       } break;
     }
 
-    glGenerateMipmap(texture_type);
+    //glGenerateMipmap(texture_type);
 
     if(free_data)
         free(desc.data_);
@@ -234,7 +234,7 @@ namespace gfx
       desc.width_,
       desc.height_,
       0,
-      gl_texture_2d
+      gl_texture_type::texture_2d
     }, false);
 
     bind_texture(tex, 0);
@@ -246,7 +246,7 @@ namespace gfx
       printf("Framebuffer is not completed!\n");
 
     glBindFramebuffer(GL_FRAMEBUFFER, tex); 
-    texture_t t = { tex, gl_texture_2d, 640, 480 };
+    texture_t t = { tex, gl_texture_type::texture_2d, 640, 480 };
     framebuffer_t r = { fbo, t};
     return r;
   }
@@ -308,7 +308,8 @@ namespace gfx
     glBindFramebuffer(GL_FRAMEBUFFER, b.buffer_);
   }
 
-  void draw_elements(gl_draw_mode mode, u64 count, gl_type type, u64 offset)
+  //offset is u64 bc it should be casted to *
+  void draw_elements(gl_draw_mode mode, u32 count, gl_type type, u64 offset)
   {
     glDrawElements(gl_draw_mode_get(mode), count, gl_type_get(type), (const void*)offset);
   }
@@ -335,34 +336,34 @@ namespace gfx
   
   
 
-  u32 gl_type_components_count(gl_type t)
+  static constexpr u32 gl_type_components_count(gl_type t)
   {
     // TODO add more types
     switch(t)
     {
-      case gl_byte: return 1;
-      case gl_ubyte: return 1;
-      case gl_int: return 1;
-      case gl_uint: return 1;
-      case gl_float: return 1;
-      case gl_float2: return 2;
-      case gl_float3: return 3;
-      case gl_float4: return 4;
+    case gl_type::gl_byte: return 1;
+    case gl_type::gl_ubyte: return 1;
+		case gl_type::gl_int: return 1;
+		case gl_type::gl_uint: return 1;
+		case gl_type::gl_float: return 1;
+		case gl_type::gl_float2: return 2;
+		case gl_type::gl_float3: return 3;
+		case gl_type::gl_float4: return 4;
       default: return 4; // The initial value is 4. (as in the opengl docs)
     }
     assert(false);
     return 0;
   }
 
-  u32 gl_type_get(gl_type t)
+  static constexpr u32 gl_type_get(gl_type t)
   {
     // TODO add more types
     switch(t)
     {
-      case gl_byte: return GL_BYTE;
-      case gl_ubyte: return GL_UNSIGNED_BYTE;
-      case gl_int: return GL_INT;
-      case gl_uint: return GL_UNSIGNED_INT;
+    case gl_type::gl_byte: return GL_BYTE;
+    case gl_type::gl_ubyte: return GL_UNSIGNED_BYTE;
+    case gl_type::gl_int: return GL_INT;
+    case gl_type::gl_uint: return GL_UNSIGNED_INT;
       default: return GL_FLOAT; // The initial value is GL_FLOAT. (as in the opengl docs)
       
     }
@@ -370,89 +371,90 @@ namespace gfx
     return 0;
   }
 
-  u32 gl_type_size(gl_type t)
+  static constexpr u32 gl_type_size(gl_type t)
   {
     // TODO add more types
     switch(t)
     {
-      case gl_byte: return 1;
-      case gl_ubyte: return 1;
-      case gl_int: return 1*4;
-      case gl_uint: return 1*4;
-      case gl_float: return 1*4;
-      case gl_float2: return 2*4;
-      case gl_float3: return 3*4;
-      case gl_float4: return 4*4;
+    case gl_type::gl_byte: return 1;
+		case  gl_type::gl_ubyte: return 1;
+		case  gl_type::gl_int: return 1*4;
+		case  gl_type::gl_uint: return 1*4;
+		case  gl_type::gl_float: return 1*4;
+		case  gl_type::gl_float2: return 2*4;
+		case  gl_type::gl_float3: return 3*4;
+		case  gl_type::gl_float4: return 4*4;
     }
     assert(false);
     return 0;
 
   }
 
-  u32 gl_buffer_type(buffer_type t)
+  static constexpr u32 gl_buffer_type(buffer_type t)
   {
     switch(t)
     {
-    case vertex_buffer: return GL_ARRAY_BUFFER;
-    case index_buffer: return GL_ELEMENT_ARRAY_BUFFER;
+    case buffer_type::vertex_buffer: return GL_ARRAY_BUFFER;
+    case buffer_type::index_buffer: return GL_ELEMENT_ARRAY_BUFFER;
       
     }
     assert(false && "failed to get gl buffer type");
     return 0;
   }
   
-  u32 gl_draw_mode_get(gl_draw_mode m)
+  static constexpr u32 gl_draw_mode_get(gl_draw_mode m)
   {
     switch (m)
     {
-      case gl_points: return GL_POINTS;
-      case gl_lines:  return GL_LINES;
-      case gl_line_loop: return GL_LINE_LOOP;
-      case gl_line_strip: return GL_LINE_STRIP;
-      case gl_triangles: return GL_TRIANGLES;
-      case gl_triangle_strip: return GL_TRIANGLE_STRIP;
-      case gl_triangle_fan: return GL_TRIANGLE_FAN;
-      case gl_lines_adjacency: return GL_LINES_ADJACENCY;
-      case gl_line_strip_adjaceny: return GL_LINE_STRIP_ADJACENCY;
-      case gl_triangles_adjacency: return GL_TRIANGLES_ADJACENCY;
-      case gl_triangle_strip_adjacency: return GL_TRIANGLE_STRIP_ADJACENCY;
+		case gl_draw_mode::points: return GL_POINTS;
+		case gl_draw_mode::lines:  return GL_LINES;
+		case gl_draw_mode::line_loop: return GL_LINE_LOOP;
+		case gl_draw_mode::line_strip: return GL_LINE_STRIP;
+		case gl_draw_mode::triangles: return GL_TRIANGLES;
+		case gl_draw_mode::triangle_strip: return GL_TRIANGLE_STRIP;
+		case gl_draw_mode::triangle_fan: return GL_TRIANGLE_FAN;
+		case gl_draw_mode::lines_adjacency: return GL_LINES_ADJACENCY;
+		case gl_draw_mode::line_strip_adjaceny: return GL_LINE_STRIP_ADJACENCY;
+		case gl_draw_mode::triangles_adjacency: return GL_TRIANGLES_ADJACENCY;
+		case gl_draw_mode::triangle_strip_adjacency: return GL_TRIANGLE_STRIP_ADJACENCY;
     }
     assert(false && "failed to get gl draw mode get");
     return 0;
   }
 
-  u32 gl_texture_type_get(gl_texture_type t)
+  static constexpr u32 gl_texture_type_get(gl_texture_type t)
   {
     switch (t)
     {
-      case gl_texture_2d: return GL_TEXTURE_2D;
-      case gl_texture_cubemap: return GL_TEXTURE_CUBE_MAP;
+    case gl_texture_type::texture_2d: return GL_TEXTURE_2D;
+    case gl_texture_type::texture_cubemap: return GL_TEXTURE_CUBE_MAP;
     }
     assert(false);
     return 0;
   }
 
-  u32 gl_format_get(gl_format f)
+  static constexpr u32 gl_format_get(gl_format f)
   {
     switch (f)
     {
-      case gl_red:  return  GL_RED;
-      case gl_rg:  return  GL_RG;
-      case gl_rgb:  return GL_RGB;
-      case gl_bgr:  return  GL_BGR;
-      case gl_rgba: return  GL_RGBA;
-      case gl_bgra: return  GL_BGRA;
-      case gl_red_int: return  GL_RED_INTEGER;
-      case gl_rg_int:  return  GL_RG_INTEGER;
-      case gl_rgb_int: return  GL_RGB_INTEGER;
-      case gl_bgr_int:  return  GL_BGR_INTEGER;
-      case gl_rgba_int: return  GL_RGBA_INTEGER;
-      case gl_bgra_int: return  GL_BGRA_INTEGER;
-      case gl_stencil_id: return  GL_STENCIL_INDEX;
-      case gl_depth_comp: return GL_DEPTH_COMPONENT;
-      case gl_depth_stencil: return GL_DEPTH_STENCIL;
+    case gl_format::red:  return  GL_RED;
+		case gl_format::rg:  return  GL_RG;
+		case gl_format::rgb:  return GL_RGB;
+		case gl_format::bgr:  return  GL_BGR;
+		case gl_format::rgba: return  GL_RGBA;
+		case gl_format::bgra: return  GL_BGRA;
+		case gl_format::red_int: return  GL_RED_INTEGER;
+		case gl_format::rg_int:  return  GL_RG_INTEGER;
+		case gl_format::rgb_int: return  GL_RGB_INTEGER;
+		case gl_format::bgr_int:  return  GL_BGR_INTEGER;
+		case gl_format::rgba_int: return  GL_RGBA_INTEGER;
+		case gl_format::bgra_int: return  GL_BGRA_INTEGER;
+		case gl_format::stencil_id: return  GL_STENCIL_INDEX;
+		case gl_format::depth_comp: return GL_DEPTH_COMPONENT;
+		case gl_format::depth_stencil: return GL_DEPTH_STENCIL;
     }
     assert(false);
+    return 0;
   }
 
 

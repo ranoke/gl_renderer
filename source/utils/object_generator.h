@@ -44,15 +44,14 @@ generate_terrain(i32 width, i32 height, glm::vec3 scale, f32 octaves = 8.0f, f32
 
   glm::vec2 dim = glm::vec2(height, width);
 
-  srand(time(NULL));
-  int seed = rand();
+  auto seed = rand();
 
   f32 min = 0.0, max = 0.0;
   for (i32 i = 0; i < dim.x; i++)
   {
     for (i32 j = 0; j < dim.y; j++)
     {
-      heightmap[i][j] = stb_perlin_fbm_noise3(i * (1.0 / dim.x), j * (1.0 / dim.y), 0, lacunarity, gain, octaves);
+      heightmap[i][j] = stb_perlin_fbm_noise3(i * (1.0f / dim.x), j * (1.0f / dim.y), 0, lacunarity, gain, static_cast<i32>(octaves));
       if (heightmap[i][j] > max)
         max = heightmap[i][j];
       if (heightmap[i][j] < min)
@@ -73,9 +72,9 @@ generate_terrain(i32 width, i32 height, glm::vec3 scale, f32 octaves = 8.0f, f32
   std::vector<f32> positions;
 
   //Loop over all positions and add the triangles!
-  for (i32 i = 0; i < dim.x - 1; i++)
+  for (u64 i = 0; i < dim.x - 1; i++)
   {
-    for (i32 j = 0; j < dim.y - 1; j++)
+    for (u64 j = 0; j < dim.y - 1; j++)
     {
 
       //Add to Position Vector
@@ -87,20 +86,20 @@ generate_terrain(i32 width, i32 height, glm::vec3 scale, f32 octaves = 8.0f, f32
       //UPPER TRIANGLE
 
       //Add Indices
-      indices.push_back(positions.size() / 3 + 0);
-      indices.push_back(positions.size() / 3 + 1);
-      indices.push_back(positions.size() / 3 + 2);
-      indices.push_back(positions.size() / 3 + 0);
+      indices.push_back(static_cast<u32>(positions.size() / 3 + 0));
+      indices.push_back(static_cast<u32>(positions.size() / 3 + 1));
+      indices.push_back(static_cast<u32>(positions.size() / 3 + 2));
+      indices.push_back(static_cast<u32>(positions.size() / 3 + 0));
 
       add(positions, a);
       add(positions, b);
       add(positions, c);
 
       //Lower Triangle
-      indices.push_back(positions.size() / 3 + 0);
-      indices.push_back(positions.size() / 3 + 1);
-      indices.push_back(positions.size() / 3 + 2);
-      indices.push_back(positions.size() / 3 + 0);
+      indices.push_back(static_cast<u32>(positions.size() / 3 + 0));
+      indices.push_back(static_cast<u32>(positions.size() / 3 + 1));
+      indices.push_back(static_cast<u32>(positions.size() / 3 + 2));
+      indices.push_back(static_cast<u32>(positions.size() / 3 + 0));
 
       add(positions, d);
       add(positions, c);
@@ -110,12 +109,12 @@ generate_terrain(i32 width, i32 height, glm::vec3 scale, f32 octaves = 8.0f, f32
   gfx::buffer_desc_t vbo_desc = {
     positions.size() * sizeof(f32),
       positions.data(),
-      gfx::vertex_buffer
+      gfx::buffer_type::vertex_buffer
   };
   gfx::buffer_desc_t ibo_desc = {
       indices.size() * sizeof(u32),
       indices.data(),
-      gfx::index_buffer };
+      gfx::buffer_type::index_buffer };
   gfx::buffer_t vbo = gfx::buffer_ctor(vbo_desc);
   gfx::buffer_t ibo = gfx::buffer_ctor(ibo_desc);
   return renderer::render_object_t("", vbo, ibo, indices.size(), {});

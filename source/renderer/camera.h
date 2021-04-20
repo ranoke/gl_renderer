@@ -15,6 +15,7 @@ namespace renderer
 		free_camera_t(float fov_degrees, float aspect, float near, float far)
 		{
 			projection_ = glm::perspective(glm::radians(fov_degrees), aspect, near, far);
+			
 		}
 
 		void update_view()
@@ -32,10 +33,10 @@ namespace renderer
 		glm::vec3 camera_front_ = glm::vec3(0.0f, 0.0f, -1.0f);
 		glm::vec3 camera_up_    = glm::vec3(0.0f, 1.0f,  0.0f);
 
-		glm::vec3 position_;
-		glm::vec3 rotation_; // pitch, yaw, roll i guess
-		glm::mat4 view_;
-		glm::mat4 projection_;
+		glm::vec3 position_   = glm::vec3(0,0,0);
+		glm::vec3 rotation_   = glm::vec3(0,0,0); // pitch, yaw, roll i guess
+		glm::mat4 view_       = glm::mat4(1.f);
+		glm::mat4 projection_ = glm::mat4(1.f);
 	};
 
 } // namespace renderer

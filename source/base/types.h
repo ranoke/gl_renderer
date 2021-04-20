@@ -9,6 +9,6 @@ using i64 = int64_t;
 using u64 = uint64_t;
 
 using f32 = float;
-using d64 = double;
+using f64 = double;
 
 #endif // __TYPES_H__

@@ -59,7 +59,7 @@ namespace gfx_utils
   }
   gfx::texture_t texture_load(const std::string &path)
   {
-    gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_2d};
+    gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_type::texture_2d};
 
     // TODO switch for channels and formats of texture
 
@@ -75,11 +75,10 @@ namespace gfx_utils
 
   gfx::texture_t texture_load_cubemap(const std::vector<const char *> &path)
   {
-    gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_cubemap};
+    gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_type::texture_cubemap};
     i32 w, h, c;
     desc.data_ = malloc(6 * sizeof(void *));
-
-    void **data = (void **)desc.data_;
+    void** data = (void** )desc.data_;
     for (int i = 0; i < 6; i++)
     {
       data[i] = stbi_load(path[i], &w, &h, &c, 0);
@@ -92,7 +91,7 @@ namespace gfx_utils
     }
     desc.width_ = w;
     desc.height_ = h;
-    gfx::texture_t t = gfx::texture_ctor(desc, false);
+    const gfx::texture_t t = gfx::texture_ctor(desc, false);
 
     for (int i = 0; i < 6; i++)
     {
@@ -114,7 +113,7 @@ namespace gfx_utils
       gfx::texture_t t =  {0};
       return t;
     }
-    gfx::texture_desc_t desc = {w, h, data, gfx::gl_texture_cubemap};
+    gfx::texture_desc_t desc = {static_cast<u32>(w), static_cast<u32>(h), data, gfx::gl_texture_type::texture_cubemap};
     gfx::texture_t t = gfx::texture_ctor(desc);
     stbi_image_free(data);
     return t;

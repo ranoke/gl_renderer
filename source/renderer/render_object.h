@@ -16,10 +16,7 @@ namespace renderer
 
   struct render_object_t
   {
-    render_object_t()
-    {
-
-    }
+    render_object_t() = default;
     render_object_t(const std::string& path, const gfx::buffer_t& vertex_buffer, const gfx::buffer_t& index_buffer, u32 index_count, const std::vector<gfx::texture_t> textures)
       : path_(path)
       , vertex_buffer_(vertex_buffer)
@@ -42,12 +39,18 @@ namespace renderer
       }
 
     }
-    render_object_t(const render_object_t& other)
+    render_object_t(const render_object_t& other)    
     {
+      path_;
+      index_buffer_;
+      vertex_buffer_;
+      index_count_;
+      textures_;
       memcpy(this, &other, sizeof(render_object_t));
       memset((void*)&other, 0, sizeof(render_object_t));
+
     }
-    render_object_t(render_object_t&& other)
+    render_object_t(render_object_t&& other) noexcept
       : path_ (std::move(other.path_))
       , vertex_buffer_(std::move(other.vertex_buffer_))
       , index_buffer_(std::move(other.index_buffer_))
@@ -62,7 +65,7 @@ namespace renderer
       memset((void*)&other, 0, sizeof(render_object_t));
       return *this;
     }
-    render_object_t& operator=(render_object_t&& other)
+    render_object_t& operator=(render_object_t&& other) noexcept
     {
       path_ = std::move(other.path_);
       vertex_buffer_ = std::move(other.vertex_buffer_);

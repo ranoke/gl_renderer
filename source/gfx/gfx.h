@@ -14,7 +14,7 @@
 namespace gfx
 {
 
-  enum gl_type
+  enum class gl_type : u32
   {
     // TODO add more types
     gl_byte,
@@ -27,55 +27,56 @@ namespace gfx
     gl_float4
   };
 
-  enum gl_draw_mode
+  enum class gl_draw_mode : u32
   {
-    gl_points,
-    gl_lines,
-    gl_line_loop,
-    gl_line_strip,
-    gl_triangles,
-    gl_triangle_strip,
-    gl_triangle_fan,
-    gl_lines_adjacency,
-    gl_line_strip_adjaceny,
-    gl_triangles_adjacency,
-    gl_triangle_strip_adjacency
+    points,
+    lines,
+    line_loop,
+    line_strip,
+    triangles,
+    triangle_strip,
+    triangle_fan,
+    lines_adjacency,
+    line_strip_adjaceny,
+    triangles_adjacency,
+    triangle_strip_adjacency
   };
 
-  enum gl_texture_type
+  enum class gl_texture_type : u32
   {
-    gl_texture_2d,
-    gl_texture_cubemap
+    texture_2d,
+    texture_cubemap
   };
 
-  enum gl_format
+  enum class gl_format : u32
   {
-    gl_red, // GL_RED,
-    gl_rg, // GL_RG,
-    gl_rgb, // GL_RGB,
-    gl_bgr, // GL_BGR,
-    gl_rgba,// GL_RGBA,
-    gl_bgra,// GL_BGRA,
-    gl_red_int,// GL_RED_INTEGER,
-    gl_rg_int, // GL_RG_INTEGER,
-    gl_rgb_int,// GL_RGB_INTEGER,
-    gl_bgr_int, // GL_BGR_INTEGER,
-    gl_rgba_int,// GL_RGBA_INTEGER,
-    gl_bgra_int,// GL_BGRA_INTEGER,
-    gl_stencil_id,// GL_STENCIL_INDEX,
-    gl_depth_comp,// GL_DEPTH_COMPONENT,
-    gl_depth_stencil// GL_DEPTH_STENCIL.
+    red, // GL_RED,
+    rg, // GL_RG,
+    rgb, // GL_RGB,
+    bgr, // GL_BGR,
+    rgba,// GL_RGBA,
+    bgra,// GL_BGRA,
+    red_int,// GL_RED_INTEGER,
+    rg_int, // GL_RG_INTEGER,
+    rgb_int,// GL_RGB_INTEGER,
+    bgr_int, // GL_BGR_INTEGER,
+    rgba_int,// GL_RGBA_INTEGER,
+    bgra_int,// GL_BGRA_INTEGER,
+    stencil_id,// GL_STENCIL_INDEX,
+    depth_comp,// GL_DEPTH_COMPONENT,
+    depth_stencil// GL_DEPTH_STENCIL.
   };
 
 
-  enum buffer_type
+  enum class buffer_type : u32
   {
+    none = 0,
     vertex_buffer = 1,
     index_buffer,
     other_buffer // idk, not sure about this
   };
 
-  enum framebuffer_attachment
+  enum class framebuffer_attachment
   {
     framebuffer_color_attachment = BIT(1), // TODO populate
     framebuffer_depth_attachment = BIT(2)
@@ -94,16 +95,13 @@ namespace gfx
   struct buffer_t
   {
 
-    buffer_t() {}
+    buffer_t() = default;
     buffer_t(u32 buffer, buffer_type type = zero_enum(buffer_type))
         : buffer_(buffer), type_(type)
     {
     }
-    buffer_t(const buffer_t &other)
-    {
-      memcpy(this, &other, sizeof(buffer_t));
-    }
-    buffer_t(buffer_t &&other)
+    buffer_t(const buffer_t& other) = default;
+    buffer_t(buffer_t &&other) noexcept
         : buffer_(std::exchange(other.buffer_, 0)), type_(std::exchange(other.type_, zero_enum(buffer_type)))
     {
     }
@@ -112,15 +110,15 @@ namespace gfx
       memcpy(this, &other, sizeof(buffer_t));
       return *this;
     }
-    buffer_t &operator=(buffer_t &&other)
+    buffer_t &operator=(buffer_t &&other) noexcept
     {
       buffer_ = std::exchange(other.buffer_, 0);
       type_ = std::exchange(other.type_, zero_enum(buffer_type));
       return *this;
     }
 
-    u32 buffer_;
-    buffer_type type_ = zero_enum(buffer_type);
+    u32 buffer_ = 0;
+    buffer_type type_ = buffer_type::none;
   }; 
 
   // w,h,data, tex_type, data_type, format, internal_format 
@@ -129,10 +127,10 @@ namespace gfx
     u32 width_;
     u32 height_;
     void *data_;
-    gl_texture_type texture_type_ = gl_texture_2d;
-    gl_type data_type_ = gl_ubyte;
-    gl_format format_ = gl_rgb;
-    gl_format internal_format_ = gl_rgb;
+    gl_texture_type texture_type_ = gl_texture_type::texture_2d;
+    gl_type data_type_ = gl_type::gl_ubyte;
+    gl_format format_ = gl_format::rgb;
+    gl_format internal_format_ = gl_format::rgb;
 
     // TODO add type and wrapping params
     // also think about adding here a path
@@ -215,12 +213,14 @@ namespace gfx
   void bind_texture(const texture_t &t, u32 active_texture);
   void bind_framebuffer(const framebuffer_t &b);
 
-  void draw_elements(gl_draw_mode mode, u64 count, gl_type type, u64 offset);
+  void draw_elements(gl_draw_mode mode, u32 count, gl_type type, u64 offset);
 
   void set_uniform_int(program_t program, const char *name, int value);
   void set_uniform_float(program_t program, const char *name, float val);
   void set_uniform_vec3(program_t program, const char *name, const glm::vec3 &val);
   void set_uniform_mat4(program_t program, const char *name, const glm::mat4 &val);
+
+  using enum gl_type;
 }
 
 #endif // __GFX_H__
