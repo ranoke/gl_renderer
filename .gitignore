@@ -6,6 +6,17 @@ bin-int/
 # visual studio code settings
 .vscode/
 
+# build files
+Makefile
+*.make
+*.sln
+*.vcxproj
+*.filters
+*.user
+
+#also imgui ini file layout for now
+imgui.ini
+
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -47,6 +58,6 @@ bin-int/
 *.lib
 
 # Executables
-*.exe
+# *.exe - not for now
 *.out
 *.app
