@@ -17,7 +17,7 @@ namespace renderer
 			projection_ = glm::perspective(glm::radians(fov_degrees), aspect, near, far);
 		}
 
-		glm::mat4 update_view()
+		void update_view()
 		{
 			glm::vec3 direction;
 			direction.x = cos(glm::radians(rotation_.x)) * cos(glm::radians(rotation_.y));

@@ -43,7 +43,7 @@ namespace gfx_utils
   // currently every image should be the same size
   // load in this order:
   // right, left, top, bottom, front, back
-  gfx::texture_t texture_load_cubemap(const std::vector<char *> &path);
+  gfx::texture_t texture_load_cubemap(const std::vector<const char *> &path);
 
   // loads 2d texture
   gfx::texture_t texture_load(const char *path);

@@ -246,7 +246,9 @@ namespace gfx
       printf("Framebuffer is not completed!\n");
 
     glBindFramebuffer(GL_FRAMEBUFFER, tex); 
-    return (framebuffer_t){fbo, (texture_t){tex, gl_texture_2d, 640, 480}};
+    texture_t t = { tex, gl_texture_2d, 640, 480 };
+    framebuffer_t r = { fbo, t};
+    return r;
   }
 
 

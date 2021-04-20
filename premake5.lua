@@ -6,9 +6,14 @@ workspace "gl_renderer"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
-IncludeDir["imgui"] = "/third_party/imgui"
-IncludeDir["flecs"] = "/third_party/flecs"
+IncludeDir["glfw"]  = "%{wks.location}/third_party/glfw/include"
+IncludeDir["glew"]  = "%{wks.location}/third_party/glew/include"
+IncludeDir["imgui"] = "%{wks.location}/third_party/imgui"
+IncludeDir["flecs"] = "%{wks.location}/third_party/flecs"
+IncludeDir["glm"]  = "%{wks.location}/third_party/glm/include"
 
+include "/third_party/glew"
+include "/third_party/glfw"
 
 includedirs
 {
@@ -52,32 +57,37 @@ project "gl_renderer"
     includedirs
     {
       "source",
-      "third_party/imgui",
+      "%{IncludeDir.glew}",
+      "%{IncludeDir.glfw}",
       "%{IncludeDir.imgui}",
-      "%{IncludeDir.flecs}"
+      "%{IncludeDir.flecs}",
+      "%{IncludeDir.glm}"
     }
 
     defines
     {
-	    "GLFW_INCLUDE_NONE", 
+	    "GLFW_INCLUDE_NONE",
+	    "GLEW_STATIC"
     }
 
     links 
     { 
+      "glew",
       "glfw",
-      "GLEW",
-      "dl",
-      "GL"
+      
+
     }
 
     filter "system:windows"
       system "windows"
-      links { "OpenGL32" }
+      links { "opengl32.lib",  }
+      defines { "_CRT_SECURE_NO_WARNINGS" }
       
 
     filter "system:linux"
       system "linux"
       linkoptions {"-pthread"}
+      links { "GL", "dl"}
       
 
     filter "configurations:Debug"

@@ -60,6 +60,7 @@ namespace renderer
     {
       memcpy(this, &other, sizeof(render_object_t));
       memset((void*)&other, 0, sizeof(render_object_t));
+      return *this;
     }
     render_object_t& operator=(render_object_t&& other)
     {

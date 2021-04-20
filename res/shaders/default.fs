@@ -1,4 +1,4 @@
-#version 330 core
+#version 330
 out vec4 frag_color;
 
 uniform sampler2D u_tex;

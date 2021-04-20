@@ -73,7 +73,7 @@ namespace gfx_utils
     return t;
   }
 
-  gfx::texture_t texture_load_cubemap(const std::vector<char *> &path)
+  gfx::texture_t texture_load_cubemap(const std::vector<const char *> &path)
   {
     gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_cubemap};
     i32 w, h, c;
@@ -86,7 +86,8 @@ namespace gfx_utils
       if (data[i] == NULL)
       {
         assert(false);
-        return (gfx::texture_t){0, (gfx::gl_texture_type)0};
+        gfx::texture_t t = { 0, (gfx::gl_texture_type)0 };
+        return t;
       }
     }
     desc.width_ = w;
@@ -110,7 +111,8 @@ namespace gfx_utils
     if (data == NULL)
     {
       assert(false && "failed to load texture");
-      return (gfx::texture_t){0};
+      gfx::texture_t t =  {0};
+      return t;
     }
     gfx::texture_desc_t desc = {w, h, data, gfx::gl_texture_cubemap};
     gfx::texture_t t = gfx::texture_ctor(desc);

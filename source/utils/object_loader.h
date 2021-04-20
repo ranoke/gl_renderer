@@ -66,7 +66,7 @@ obj_load_render_object(const std::string &path)
 	std::string warn;
 	std::string err;
 	bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(),
-															"./", true);
+															"", true);
 
 	std::vector<vertex_t> vertices;
 	std::vector<u32> indices;
@@ -77,18 +77,18 @@ obj_load_render_object(const std::string &path)
 		{
 			vertex_t v;
 			v.position_ = {
-					attrib.vertices[3 * index.vertex_index + 0],
-					attrib.vertices[3 * index.vertex_index + 1],
-					attrib.vertices[3 * index.vertex_index + 2]};
+					attrib.vertices[index.vertex_index*3 + 0],
+					attrib.vertices[index.vertex_index*3 + 1],
+					attrib.vertices[index.vertex_index*3 + 2]};
 			v.normal_ = {
-					attrib.normals[3 * index.vertex_index + 0],
-					attrib.normals[3 * index.vertex_index + 1],
-					attrib.normals[3 * index.vertex_index + 2]};
+					attrib.normals[index.normal_index*3 + 0],
+					attrib.normals[index.normal_index *3 + 1],
+					attrib.normals[index.normal_index *3 + 2]};
 			if(attrib.texcoords.size())
 			{
 				v.uv_ = {
-						attrib.texcoords[2 * index.vertex_index + 0],
-						attrib.texcoords[2 * index.vertex_index + 1],
+						attrib.texcoords[index.texcoord_index*2 + 0],
+						attrib.texcoords[index.texcoord_index*2 + 1],
 				};
 			}
 
@@ -113,7 +113,7 @@ obj_load_render_object(const std::string &path)
 	std::vector<gfx::texture_t> textures; // TODO add texture loading
 	
 
-	return { path, vbo, ibo, indices.size(), {} };
+	return { path, vbo, ibo, (u32)indices.size(), {} };
 }
 
 #endif // __MESH_LOADER_H__

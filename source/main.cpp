@@ -58,6 +58,8 @@ int main()
 
   camera.position_ = {-0.15, -0.15, -5};
 
+  
+
   renderer::render_object_t perlin_mesh = generate_terrain(128, 128, {3, 150, 3});
   renderer::render_object_t skybox_mesh = obj_load_render_object("./res/cube.obj");
   renderer::render_object_t mesh = obj_load_render_object("./res/dragon.obj");
@@ -65,7 +67,7 @@ int main()
 
   //auto dragon = obj_load("./res/dragon.obj");
 
-  std::vector<char *> cubemap_path = {
+  const std::vector<const char *> cubemap_path = {
       "./res/skybox/skybox/right.jpg",
       "./res/skybox/skybox/left.jpg",
       "./res/skybox/skybox/top.jpg",
@@ -255,7 +257,7 @@ int main()
     window.update();
     //std::cout << camera.position_.x << " " << camera.position_.y << " " << camera.position_.z << "\n";
   }
-  stb_leakcheck_dumpmem();
+  //stb_leakcheck_dumpmem();
   return 0;
 }
 

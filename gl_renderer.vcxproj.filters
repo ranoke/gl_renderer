@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{76FF3A1C-62A1-65F2-4B5C-7946379DEC42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\gfx">
+      <UniqueIdentifier>{0A5415B8-F60B-5705-5F13-30614BEAF1F5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\gui">
+      <UniqueIdentifier>{EA5515B8-D60D-5705-3F15-30612BECF1F5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\utils">
+      <UniqueIdentifier>{7651BF13-62B4-4EB8-0B3A-876EF77B1A3B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{0FB18DF1-7B66-06E7-045B-00BE700FFDEA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\flecs">
+      <UniqueIdentifier>{0B2D0D23-7743-0BB9-C0BA-96DA2C10DC40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\imgui">
+      <UniqueIdentifier>{B90D4423-2524-42B9-6E9B-CDDADAF01241}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\gfx\gfx.cpp">
+      <Filter>source\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="source\gfx\gfx_utils.cpp">
+      <Filter>source\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="source\gui\gui.cpp">
+      <Filter>source\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\utils\stb_image.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\utils\stb_include.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\utils\stb_leakcheck.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\utils\stb_perlin.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\utils\tiny_obj_loader.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\window.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\flecs\flecs.c">
+      <Filter>third_party\flecs</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui.cpp">
+      <Filter>third_party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_demo.cpp">
+      <Filter>third_party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_draw.cpp">
+      <Filter>third_party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_tables.cpp">
+      <Filter>third_party\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_widgets.cpp">
+      <Filter>third_party\imgui</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
