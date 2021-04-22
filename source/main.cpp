@@ -22,7 +22,7 @@
 #include "renderer/light.h"
 #include "renderer/render_object.h"
 
-#include "scene/mesh.h"
+#include "renderer/mesh.h"
 
 #include "gui/gui.h"
 
@@ -38,12 +38,12 @@ int main()
   window_t window("gl_renderer", 640, 480);
   gfx::init();
 
-	gfx::program_t p_default = gfx_utils::program_load("./res/shaders/default.vs", "./res/shaders/default.fs");
-	gfx::program_t p_perlin_mesh = gfx_utils::program_load("./res/shaders/perlin_mesh.vs", "./res/shaders/perlin_mesh.fs");
-	gfx::program_t p_light = gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs");
-	gfx::program_t p_material = gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs");
-	gfx::program_t p_skybox = gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs");
-	gfx::program_t p_grid = gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs");
+  gfx::program_t p_default = gfx_utils::program_load("./res/shaders/default.vs", "./res/shaders/default.fs");
+  gfx::program_t p_perlin_mesh = gfx_utils::program_load("./res/shaders/perlin_mesh.vs", "./res/shaders/perlin_mesh.fs");
+  gfx::program_t p_light = gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs");
+  gfx::program_t p_material = gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs");
+  gfx::program_t p_skybox = gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs");
+  gfx::program_t p_grid = gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs");
 
   gfx::vertex_array_t vao = gfx::vertex_array_ctor();
   //// so i am not sure about this design
@@ -55,26 +55,22 @@ int main()
 
   float last_frame = 0.0f;
 
-  //camera.position_ = {-0.15, -0.15, -5};
 
-  //
+  renderer::render_object_t perlin_mesh = generate_terrain(128, 128, { 3, 150, 3 });
+  renderer::render_object_t skybox_mesh = obj_load_render_object("./res/cube.obj");
+  renderer::render_object_t mesh = obj_load_render_object("./res/cube.obj");
+  renderer::render_object_t grid_mesh = obj_load_render_object("./res/grid.obj");
 
-	renderer::render_object_t perlin_mesh = generate_terrain(1024, 1024, { 3, 150, 3 });
-	renderer::render_object_t skybox_mesh = obj_load_render_object("./res/cube.obj");
-	renderer::render_object_t mesh = obj_load_render_object("./res/cube.obj");
-	renderer::render_object_t grid_mesh = obj_load_render_object("./res/grid.obj");
 
-  ////auto dragon = obj_load("./res/dragon.obj");
+  const std::vector<const char*> cubemap_path = {
+      "./res/skybox/skybox/right.jpg",
+      "./res/skybox/skybox/left.jpg",
+      "./res/skybox/skybox/top.jpg",
+      "./res/skybox/skybox/bottom.jpg",
+      "./res/skybox/skybox/front.jpg",
+      "./res/skybox/skybox/back.jpg" };
 
-	const std::vector<const char*> cubemap_path = {
-			"./res/skybox/skybox/right.jpg",
-			"./res/skybox/skybox/left.jpg",
-			"./res/skybox/skybox/top.jpg",
-			"./res/skybox/skybox/bottom.jpg",
-			"./res/skybox/skybox/front.jpg",
-			"./res/skybox/skybox/back.jpg" };
-
-	auto cube_map = gfx_utils::texture_load_cubemap(cubemap_path);
+  auto cube_map = gfx_utils::texture_load_cubemap(cubemap_path);
 
   glCullFace(GL_BACK);
   glEnable(GL_DEPTH_TEST);
@@ -82,22 +78,21 @@ int main()
 
   gui::init(window.window_);
 
-	renderer::light_t light_red({ 5, 0, 0 }, { 0.2, 0, 0 }, 0.06f, 1.f, 512);
+  renderer::light_t light_red({ 5, 0, 0 }, { 0.2, 0, 0 }, 0.06f, 1.f, 512);
 
-	glm::mat4 model1(1.f);
-	model1 = glm::scale(model1, { 10, 10, 10 });
-	glm::mat4 model2 = glm::translate(glm::mat4(1.f), { -5, 0, 0 });
-	model2 = glm::scale(model2, { 5, 5, 5 });
-	glm::mat4 model_material = glm::translate(model1, { -10, 0, 0 });
-	model_material = glm::scale(model_material, { 10, 10, 10 });
-	glm::mat4 model_grid = glm::scale(model1, { 10, 10, 10 });
+  glm::mat4 model1(1.f);
+  model1 = glm::scale(model1, { 10, 10, 10 });
+  glm::mat4 model2 = glm::translate(glm::mat4(1.f), { -5, 0, 0 });
+  model2 = glm::scale(model2, { 5, 5, 5 });
+  glm::mat4 model_material = glm::translate(model1, { -10, 0, 0 });
+  model_material = glm::scale(model_material, { 10, 10, 10 });
+  glm::mat4 model_grid = glm::scale(model1, { 10, 10, 10 });
 
-  gfx::framebuffer_t fb = gfx::framebuffer_ctor({
-      640, 480, gfx::framebuffer_attachment::framebuffer_color_attachment });
-
-  //scene::mesh_t my_test_mesh;
-  //my_test_mesh.mesh_ = { {{0,0,0},{0,0,0},{1,1,1},obj_load_render_object("./res/dragon.obj")}};
-  //my_test_mesh.position_ = {0, 100, 100};
+  gfx::framebuffer_t fb = gfx::framebuffer_ctor({ 640, 480, gfx::framebuffer_attachment::framebuffer_color_attachment });
+  
+  renderer::mesh_t my_test_mesh = obj_load("./res/monkey.obj");
+  my_test_mesh.position_ = { 0, 200, 0 };
+  my_test_mesh.scale_ = { 20, 20, 20 };
   while (!glfwWindowShouldClose(window.window_))
   {
 		processInput(window.window_);
@@ -122,8 +117,8 @@ int main()
 		gfx::bind_buffer(skybox_mesh.vertex_buffer_);
 		gfx::bind_buffer(skybox_mesh.index_buffer_);
 		gfx::vertex_array_set_layout({ {gfx::gl_float3},
-																	{gfx::gl_float2},
-																	{gfx::gl_float3} });
+																	 {gfx::gl_float2},
+																	 {gfx::gl_float3} });
 		gfx::bind_program(p_skybox);
 		gfx::bind_texture(cube_map, 0);
 		gfx::set_uniform_mat4(p_skybox, "u_view", glm::mat4(glm::mat3(camera.view_)));
@@ -195,7 +190,7 @@ int main()
     gfx::draw_elements(gfx::gl_draw_mode::line_strip, grid_mesh.index_count_, gfx::gl_uint, 0);
 #endif
 
-    //my_test_mesh.render(p_default, camera);
+    my_test_mesh.render(p_material, camera);
 
     gfx::bind_framebuffer({0});
 

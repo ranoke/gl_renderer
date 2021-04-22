@@ -24,7 +24,7 @@ includedirs
 project "gl_renderer"
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++17"
+    cppdialect "C++latest"
     staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -32,6 +32,10 @@ project "gl_renderer"
 
     files
     {
+      -- headers
+      "source/**.h",
+
+      -- my sources 
       "source/main.cpp",
       "source/window.cpp",
       "source/gfx/gfx.cpp",

@@ -39,7 +39,7 @@ generate_terrain(i32 width, i32 height, glm::vec3 scale, f32 octaves = 8.0f, f32
   f32 scale_z = scale.z;
   std::vector<std::vector<f32>> heightmap;
   heightmap.resize(height);
-  for(auto& v : heightmap)
+  for (auto& v : heightmap)
     v.resize(width);
 
   glm::vec2 dim = glm::vec2(height, width);
@@ -117,7 +117,7 @@ generate_terrain(i32 width, i32 height, glm::vec3 scale, f32 octaves = 8.0f, f32
       gfx::buffer_type::index_buffer };
   gfx::buffer_t vbo = gfx::buffer_ctor(vbo_desc);
   gfx::buffer_t ibo = gfx::buffer_ctor(ibo_desc);
-  return renderer::render_object_t("", vbo, ibo, indices.size(), {});
+  return renderer::render_object_t("", vbo, ibo, indices.size());
 }
 
 #endif // __MESH_GENERATOR_H__

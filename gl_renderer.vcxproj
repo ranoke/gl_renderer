@@ -19,7 +19,6 @@
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>gl_renderer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -83,7 +82,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,7 +123,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,6 +132,32 @@
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="source\base\base.h" />
+    <ClInclude Include="source\base\types.h" />
+    <ClInclude Include="source\gfx\gfx.h" />
+    <ClInclude Include="source\gfx\gfx_utils.h" />
+    <ClInclude Include="source\gui\gui.h" />
+    <ClInclude Include="source\renderer\camera.h" />
+    <ClInclude Include="source\renderer\commands.h" />
+    <ClInclude Include="source\renderer\light.h" />
+    <ClInclude Include="source\renderer\material.h" />
+    <ClInclude Include="source\renderer\render_object.h" />
+    <ClInclude Include="source\renderer\vertex.h" />
+    <ClInclude Include="source\scene\components.h" />
+    <ClInclude Include="source\scene\entity.h" />
+    <ClInclude Include="source\renderer\mesh.h" />
+    <ClInclude Include="source\scene\scene.h" />
+    <ClInclude Include="source\utils\mesh_loader.h" />
+    <ClInclude Include="source\utils\object_generator.h" />
+    <ClInclude Include="source\utils\object_loader.h" />
+    <ClInclude Include="source\utils\stb_image.h" />
+    <ClInclude Include="source\utils\stb_include.h" />
+    <ClInclude Include="source\utils\stb_leakcheck.h" />
+    <ClInclude Include="source\utils\stb_perlin.h" />
+    <ClInclude Include="source\utils\tiny_obj_loader.h" />
+    <ClInclude Include="source\window.h" />
+  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\gfx\gfx.cpp" />
     <ClCompile Include="source\gfx\gfx_utils.cpp" />

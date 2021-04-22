@@ -19,7 +19,6 @@ namespace gfx
   static constexpr u32 gl_texture_type_get(gl_texture_type t);
   static constexpr u32 gl_format_get(gl_format f);
   
-
   vertex_buffer_layout_object_t::vertex_buffer_layout_object_t(gl_type type, bool normalized)
     : type_(type)
     , count_(gl_type_components_count(type))
@@ -247,7 +246,7 @@ namespace gfx
 
     glBindFramebuffer(GL_FRAMEBUFFER, tex); 
     texture_t t = { tex, gl_texture_type::texture_2d, 640, 480 };
-    framebuffer_t r = { fbo, t};
+    framebuffer_t r = { fbo, t };
     return r;
   }
 

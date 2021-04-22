@@ -85,7 +85,7 @@ namespace gfx_utils
       if (data[i] == NULL)
       {
         assert(false);
-        gfx::texture_t t = { 0, (gfx::gl_texture_type)0 };
+        gfx::texture_t t;
         return t;
       }
     }
@@ -110,8 +110,7 @@ namespace gfx_utils
     if (data == NULL)
     {
       assert(false && "failed to load texture");
-      gfx::texture_t t =  {0};
-      return t;
+      return {};
     }
     gfx::texture_desc_t desc = {static_cast<u32>(w), static_cast<u32>(h), data, gfx::gl_texture_type::texture_cubemap};
     gfx::texture_t t = gfx::texture_ctor(desc);

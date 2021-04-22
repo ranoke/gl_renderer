@@ -4,11 +4,20 @@
     <Filter Include="source">
       <UniqueIdentifier>{76FF3A1C-62A1-65F2-4B5C-7946379DEC42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\base">
+      <UniqueIdentifier>{E001BDBA-4CB7-35B0-D5AB-2F8741602CB4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="source\gfx">
       <UniqueIdentifier>{0A5415B8-F60B-5705-5F13-30614BEAF1F5}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\gui">
       <UniqueIdentifier>{EA5515B8-D60D-5705-3F15-30612BECF1F5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\renderer">
+      <UniqueIdentifier>{FCA3AEDF-682F-1CA4-7140-9F98DD4A78A4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\scene">
+      <UniqueIdentifier>{33BD9113-1F20-21B8-C8A5-596EB4E7EC3A}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\utils">
       <UniqueIdentifier>{7651BF13-62B4-4EB8-0B3A-876EF77B1A3B}</UniqueIdentifier>
@@ -22,6 +31,76 @@
     <Filter Include="third_party\imgui">
       <UniqueIdentifier>{B90D4423-2524-42B9-6E9B-CDDADAF01241}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\base\base.h">
+      <Filter>source\base</Filter>
+    </ClInclude>
+    <ClInclude Include="source\base\types.h">
+      <Filter>source\base</Filter>
+    </ClInclude>
+    <ClInclude Include="source\gfx\gfx.h">
+      <Filter>source\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="source\gfx\gfx_utils.h">
+      <Filter>source\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="source\gui\gui.h">
+      <Filter>source\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\camera.h">
+      <Filter>source\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\commands.h">
+      <Filter>source\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\light.h">
+      <Filter>source\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\render_object.h">
+      <Filter>source\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\scene\components.h">
+      <Filter>source\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\scene\entity.h">
+      <Filter>source\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\mesh.h">
+      <Filter>source\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\scene\scene.h">
+      <Filter>source\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\mesh_loader.h">
+      <Filter>source\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\object_generator.h">
+      <Filter>source\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\object_loader.h">
+      <Filter>source\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\stb_image.h">
+      <Filter>source\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\stb_include.h">
+      <Filter>source\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\stb_leakcheck.h">
+      <Filter>source\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\stb_perlin.h">
+      <Filter>source\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\tiny_obj_loader.h">
+      <Filter>source\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\window.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\material.h" />
+    <ClInclude Include="source\renderer\vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\gfx\gfx.cpp">

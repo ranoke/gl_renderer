@@ -71,7 +71,7 @@ namespace gfx
   enum class buffer_type : u32
   {
     none = 0,
-    vertex_buffer = 1,
+    vertex_buffer,
     index_buffer,
     other_buffer // idk, not sure about this
   };
@@ -138,10 +138,24 @@ namespace gfx
 
   struct texture_t
   {
-    u32 texture_;
-    gl_texture_type texture_type_;
-    u32 width_;
-    u32 height_;
+    texture_t() = default;
+    texture_t(u32 texture, gl_texture_type texture_type, u32 width, u32 height)
+      : texture_(texture)
+      , texture_type_(texture_type)
+      , width_(width)
+      , height_(height)
+    {}
+    //~texture_t() = delete; // manage it urself please! its very annoying
+                                   // to do it with constructor and i already know
+                                   // that my abstraction of opengl suck!
+    texture_t(const texture_t&) = default;
+    texture_t(texture_t&&) = default;
+    texture_t& operator=(const texture_t&) = default;
+    texture_t& operator=(texture_t&&) = default;
+    u32 texture_ = 0;
+    gl_texture_type texture_type_ = zero_enum(gl_texture_type);
+    u32 width_ = 0;
+    u32 height_ = 0;
 
     operator u32() { return texture_; }
   };
