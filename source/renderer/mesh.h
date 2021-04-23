@@ -42,7 +42,7 @@ namespace renderer
 			gfx::bind_program(shader);
 			gfx::bind_buffer(render_object_.vertex_buffer_);
 			gfx::bind_buffer(render_object_.index_buffer_);
-			gfx::vertex_array_set_layout({{gfx::gl_float3}, {gfx::gl_float2}, {gfx::gl_float3}});
+			gfx::vertex_array_set_layout({{gfx::gl_type::gl_float3}, {gfx::gl_type::gl_float2}, {gfx::gl_type::gl_float3}});
 
 			auto& mat = material_;
 			gfx::set_uniform_mat4(shader, "u_view", camera.view_);
@@ -58,7 +58,7 @@ namespace renderer
 			gfx::set_uniform_vec3(shader, "u_light.diffuse", {0.8, 0.8, 0.8});
 			gfx::set_uniform_vec3(shader, "u_light.specular", {0.5, 0.5, 0.5});
 
-			gfx::draw_elements(gfx::gl_draw_mode::triangles, render_object_.index_count_, gfx::gl_uint, 0);
+			gfx::draw_elements(gfx::gl_draw_mode::triangles, render_object_.index_count_, gfx::gl_type::gl_uint, 0);
     }
 
     glm::mat4 get_transfrom()

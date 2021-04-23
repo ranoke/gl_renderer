@@ -1,5 +1,6 @@
 #include "gfx_utils.h"
 
+#include <iostream>
 #include <string>
 
 namespace gfx_utils
@@ -57,15 +58,19 @@ namespace gfx_utils
   {
     return textures_.find(name) != textures_.end();
   }
+  
   gfx::texture_t texture_load(const std::string &path)
   {
     gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_type::texture_2d};
 
     // TODO switch for channels and formats of texture
+    desc.internal_format_ = gfx::gl_format::bgra;
 
     int channels;
     desc.data_ = stbi_load(path.c_str(), (int *)&desc.width_, (int *)&desc.height_, &channels, 0);
 
+    std::cout << channels << " ";
+    std::cout << path << "\n";
     gfx::texture_t t = gfx::texture_ctor(desc, false);
 
     stbi_image_free(desc.data_);

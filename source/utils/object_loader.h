@@ -58,14 +58,15 @@ obj_load(const std::string& path)
 		mat.shininess_ = m.shininess;
 		mat.index_of_refraction_ = m.ior;
 		mat.dissolve_ = m.dissolve;
-		mat.ambient_tex_ = gfx_utils::texture_load(m.ambient_texname);
-		mat.diffuse_tex_ = gfx_utils::texture_load(m.diffuse_texname);
-		mat.specular_tex_ = gfx_utils::texture_load(m.specular_texname);
-		mat.specular_highlight_tex_ = gfx_utils::texture_load(m.specular_highlight_texname);
-		mat.bump_tex_ = gfx_utils::texture_load(m.bump_texname);
-		mat.displacement_tex_ = gfx_utils::texture_load(m.displacement_texname);
-		mat.alpha_tex_ = gfx_utils::texture_load(m.alpha_texname);
-		mat.reflection_tex_ = gfx_utils::texture_load(m.reflection_texname);
+		// TODO LOL
+		mat.ambient_tex_ = gfx_utils::texture_load("./res/" + m.ambient_texname);
+		mat.diffuse_tex_ = gfx_utils::texture_load("./res/" + m.diffuse_texname);
+		mat.specular_tex_ = gfx_utils::texture_load("./res/" + m.specular_texname);
+		mat.specular_highlight_tex_ = gfx_utils::texture_load("./res/" + m.specular_highlight_texname);
+		mat.bump_tex_ = gfx_utils::texture_load("./res/" + m.bump_texname);
+		mat.displacement_tex_ = gfx_utils::texture_load("./res/" + m.displacement_texname);
+		mat.alpha_tex_ = gfx_utils::texture_load("./res/" + m.alpha_texname);
+		mat.reflection_tex_ = gfx_utils::texture_load("./res/" + m.reflection_texname);
 	}
 
 	std::vector<vertex_t> vertices;

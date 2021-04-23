@@ -234,7 +234,7 @@ namespace gfx
   void set_uniform_vec3(program_t program, const char *name, const glm::vec3 &val);
   void set_uniform_mat4(program_t program, const char *name, const glm::mat4 &val);
 
-  using enum gl_type;
+  //using enum gl_type;
 }
 
 #endif // __GFX_H__

@@ -90,7 +90,7 @@ int main()
 
   gfx::framebuffer_t fb = gfx::framebuffer_ctor({ 640, 480, gfx::framebuffer_attachment::framebuffer_color_attachment });
   
-  renderer::mesh_t my_test_mesh = obj_load("./res/monkey.obj");
+  renderer::mesh_t my_test_mesh = obj_load("./res/Handgun_obj.obj");
   my_test_mesh.position_ = { 0, 200, 0 };
   my_test_mesh.scale_ = { 20, 20, 20 };
   while (!glfwWindowShouldClose(window.window_))
@@ -116,32 +116,32 @@ int main()
 		glDepthMask(GL_FALSE);
 		gfx::bind_buffer(skybox_mesh.vertex_buffer_);
 		gfx::bind_buffer(skybox_mesh.index_buffer_);
-		gfx::vertex_array_set_layout({ {gfx::gl_float3},
-																	 {gfx::gl_float2},
-																	 {gfx::gl_float3} });
+		gfx::vertex_array_set_layout({ {gfx::gl_type::gl_float3},
+																	 {gfx::gl_type::gl_float2},
+																	 {gfx::gl_type::gl_float3} });
 		gfx::bind_program(p_skybox);
 		gfx::bind_texture(cube_map, 0);
 		gfx::set_uniform_mat4(p_skybox, "u_view", glm::mat4(glm::mat3(camera.view_)));
 		gfx::set_uniform_mat4(p_skybox, "u_proj", camera.projection_);
 		gfx::set_uniform_int(p_skybox, "skybox", 0);
-		gfx::draw_elements(gfx::gl_draw_mode::triangles, skybox_mesh.index_count_, gfx::gl_uint, 0);
+		gfx::draw_elements(gfx::gl_draw_mode::triangles, skybox_mesh.index_count_, gfx::gl_type::gl_uint, 0);
 		glDepthMask(GL_TRUE);
 #endif
 #ifdef heightmap
     gfx::bind_buffer(perlin_mesh.vertex_buffer_);
     gfx::bind_buffer(perlin_mesh.index_buffer_);
-    gfx::vertex_array_set_layout({{gfx::gl_float3}});
+    gfx::vertex_array_set_layout({{gfx::gl_type::gl_float3}});
     gfx::bind_program(p_perlin_mesh);
     gfx::set_uniform_mat4(p_perlin_mesh, "u_view", camera.view_);
     gfx::set_uniform_mat4(p_perlin_mesh, "u_proj", camera.projection_);
     gfx::set_uniform_mat4(p_perlin_mesh, "u_model", model2);
-    gfx::draw_elements(gfx::gl_draw_mode::lines, perlin_mesh.index_count_, gfx::gl_uint, 0);
+    gfx::draw_elements(gfx::gl_draw_mode::lines, perlin_mesh.index_count_, gfx::gl_type::gl_uint, 0);
 #endif
 
 #ifdef basic_light
     gfx::bind_buffer(mesh.vertex_buffer_);
     gfx::bind_buffer(mesh.index_buffer_);
-    gfx::vertex_array_set_layout({{gfx::gl_float3}, {gfx::gl_float2}, {gfx::gl_float3}});
+    gfx::vertex_array_set_layout({{gfx::gl_type::gl_float3}, {gfx::gl_type::gl_float2}, {gfx::gl_type::gl_float3}});
     gfx::bind_program(p_light);
     gfx::set_uniform_mat4(p_light, "u_view", camera.view_);
     gfx::set_uniform_mat4(p_light, "u_proj", camera.projection_);
@@ -153,7 +153,7 @@ int main()
     gfx::set_uniform_float(p_light, "u_ambient_strength", light_red.ambient_strength_);
     gfx::set_uniform_float(p_light, "u_specular_strength", light_red.specular_strength_);
     gfx::set_uniform_int(p_light, "u_resolution", light_red.resolution_);
-    gfx::draw_elements(gfx::gl_draw_mode::triangles, mesh.index_count_, gfx::gl_uint, 0);
+    gfx::draw_elements(gfx::gl_draw_mode::triangles, mesh.index_count_, gfx::gl_type::gl_uint, 0);
 #endif
 
     static glm::vec3 mat_ambient, mat_diffuse, mat_specular;
@@ -162,7 +162,7 @@ int main()
 
     gfx::bind_buffer(mesh.vertex_buffer_);
     gfx::bind_buffer(mesh.index_buffer_);
-    gfx::vertex_array_set_layout({{gfx::gl_float3}, {gfx::gl_float2}, {gfx::gl_float3}});
+    gfx::vertex_array_set_layout({{gfx::gl_type::gl_float3}, {gfx::gl_type::gl_float2}, {gfx::gl_type::gl_float3}});
     gfx::bind_program(p_material);
     gfx::set_uniform_mat4(p_material, "u_view", camera.view_);
     gfx::set_uniform_mat4(p_material, "u_proj", camera.projection_);
@@ -177,17 +177,17 @@ int main()
     gfx::set_uniform_vec3(p_material, "u_light.diffuse", light_diffuse);
     gfx::set_uniform_vec3(p_material, "u_light.specular", light_specular);
 
-    gfx::draw_elements(gfx::gl_draw_mode::triangles, mesh.index_count_, gfx::gl_uint, 0);
+    gfx::draw_elements(gfx::gl_draw_mode::triangles, mesh.index_count_, gfx::gl_type::gl_uint, 0);
 
 #ifdef grid
     gfx::bind_buffer(grid_mesh.vertex_buffer_);
     gfx::bind_buffer(grid_mesh.index_buffer_);
-    gfx::vertex_array_set_layout({{gfx::gl_float3}, {gfx::gl_float2}, {gfx::gl_float3}});
+    gfx::vertex_array_set_layout({{gfx::gl_type::gl_float3}, {gfx::gl_type::gl_float2}, {gfx::gl_type::gl_float3}});
     gfx::bind_program(p_grid);
     gfx::set_uniform_mat4(p_grid, "u_view", camera.view_);
     gfx::set_uniform_mat4(p_grid, "u_proj", camera.projection_);
     gfx::set_uniform_mat4(p_grid, "u_model", model_grid);
-    gfx::draw_elements(gfx::gl_draw_mode::line_strip, grid_mesh.index_count_, gfx::gl_uint, 0);
+    gfx::draw_elements(gfx::gl_draw_mode::line_strip, grid_mesh.index_count_, gfx::gl_type::gl_uint, 0);
 #endif
 
     my_test_mesh.render(p_material, camera);
@@ -216,6 +216,11 @@ int main()
     if (ImGui::Begin("Settings"))
     {
       ImGui::DragFloat("Camera speed", &camera_speed);
+
+      ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+      ImVec2 m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
+      ImTextureID my_tex_id = (ImTextureID)(static_cast<u64>(my_test_mesh.material_.alpha_tex_));
+      ImGui::Image(my_tex_id, m_ViewportSize, ImVec2{0, 1}, ImVec2{1, 0});
 
       ImGui::End();
     }
