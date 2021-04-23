@@ -17,23 +17,19 @@
 namespace gfx_utils
 {
 
-  struct shader_library_t
+  template<typename T>
+	struct library_t
   {
+    using type = T;
     void add(const std::string& path);
-    void add(const std::string& name, gfx::program_t shader); // actually the shader is the program 
-    gfx::program_t get(const std::string& name);
+    //void add(const std::string& name, type obj);
+    void add(const std::string& name, const type& obj); // actually the shader is the program 
+    void add(const std::string& name, type&& obj);
+    const type& get(const std::string& name);
     bool exists(const std::string& name);
-    std::unordered_map<std::string, gfx::program_t> shaders_;
+    std::unordered_map<std::string, type> data_;
   };
 
-  struct texture_library_t
-  {
-    void add(const std::string& path);
-    void add(const std::string& name, const gfx::texture_t& texture); 
-    const gfx::texture_t& get(const std::string& name);
-    bool exists(const std::string& name);
-    std::unordered_map<std::string, gfx::texture_t> textures_;
-  };
 
   // loads just a normal 2d texture
   gfx::texture_t texture_load(const std::string &path);

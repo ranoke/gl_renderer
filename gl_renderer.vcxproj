@@ -78,7 +78,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>source;third_party\glew\include;third_party\glfw\include;third_party\imgui;third_party\flecs;third_party\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>source;third_party\spdlog\include;third_party\glew\include;third_party\glfw\include;third_party\imgui;third_party\flecs;third_party\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -95,7 +95,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;RDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>source;third_party\glew\include;third_party\glfw\include;third_party\imgui;third_party\flecs;third_party\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>source;third_party\spdlog\include;third_party\glew\include;third_party\glfw\include;third_party\imgui;third_party\flecs;third_party\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -116,7 +116,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>source;third_party\glew\include;third_party\glfw\include;third_party\imgui;third_party\flecs;third_party\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>source;third_party\spdlog\include;third_party\glew\include;third_party\glfw\include;third_party\imgui;third_party\flecs;third_party\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\base\base.h" />
+    <ClInclude Include="source\base\logger.h" />
     <ClInclude Include="source\base\types.h" />
     <ClInclude Include="source\gfx\gfx.h" />
     <ClInclude Include="source\gfx\gfx_utils.h" />
@@ -142,11 +143,11 @@
     <ClInclude Include="source\renderer\commands.h" />
     <ClInclude Include="source\renderer\light.h" />
     <ClInclude Include="source\renderer\material.h" />
+    <ClInclude Include="source\renderer\mesh.h" />
     <ClInclude Include="source\renderer\render_object.h" />
     <ClInclude Include="source\renderer\vertex.h" />
     <ClInclude Include="source\scene\components.h" />
     <ClInclude Include="source\scene\entity.h" />
-    <ClInclude Include="source\renderer\mesh.h" />
     <ClInclude Include="source\scene\scene.h" />
     <ClInclude Include="source\utils\mesh_loader.h" />
     <ClInclude Include="source\utils\object_generator.h" />

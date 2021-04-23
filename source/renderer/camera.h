@@ -12,9 +12,9 @@ namespace renderer
 
 	struct free_camera_t
 	{
-		free_camera_t(float fov_degrees, float aspect, float near, float far)
+		free_camera_t(float fov_degrees, float aspect, float near__, float far__)
 		{
-			projection_ = glm::perspective(glm::radians(fov_degrees), aspect, near, far);
+			projection_ = glm::perspective(glm::radians(fov_degrees), aspect, near__, far__);
 			
 		}
 

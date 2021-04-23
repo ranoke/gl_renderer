@@ -15,7 +15,8 @@ namespace gfx_utils
     return path.substr(last_slash, last_dot);
   }
 
-  void shader_library_t::add(const std::string &path)
+  template<class T>
+  void library_t<T>::add(const std::string &path)
   {
     assert(false && "i dunno what to do with a path");
     // do i create a parser for a shader
@@ -24,58 +25,40 @@ namespace gfx_utils
     // or do i assume that .gls for example means to load
     // everything that named bedore the .gls ???
   }
-  void shader_library_t::add(const std::string &name, gfx::program_t shader)
+  //template<class T>
+  //void library_t<T>::add(const std::string& name, library_t<T>::type obj)
+  //{
+  //  assert(!exists(name) && "obj with this name already exists");
+  //  data_[name] = obj;
+  //}
+  template<class T>
+  void library_t<T>::add(const std::string &name, const library_t<T>::type& obj)
   {
-    assert(!exists(name) && "shader with this name already exists");
-    shaders_[name] = shader;
+    assert(!exists(name) && "obj with this name already exists");
+    data_[name] = obj;
   }
-  gfx::program_t shader_library_t::get(const std::string &name)
+  template<class T>
+  void library_t<T>::add(const std::string& name, library_t<T>::type&& obj)
   {
-    return shaders_[name];
+    assert(!exists(name) && "obj with this name already exists");
+    data_[name] = obj;
   }
-  bool shader_library_t::exists(const std::string &name)
+
+  template<class T>
+  const T& library_t<T>::get(const std::string& name)
   {
-    return shaders_.find(name) != shaders_.end();
+    return data_[name];
   }
-  void texture_library_t::add(const std::string &path)
+
+ 	template<class T>
+  bool library_t<T>::exists(const std::string &name)
   {
-    // i will probably have to make it more robust TODO
-    gfx::texture_t t = texture_load(path);
-    std::string name = get_filename_from_path(path);
-    assert(!exists(name) && "file already exists");
-    textures_[name] = t;
+    return data_.find(name) != data_.end();
   }
-  void texture_library_t::add(const std::string &name, const gfx::texture_t &texture)
-  {
-    assert(!exists(name) && "file already exists");
-    textures_[name] = texture;
-  }
-  const gfx::texture_t &texture_library_t::get(const std::string &name)
-  {
-    return textures_[name];
-  }
-  bool texture_library_t::exists(const std::string &name)
-  {
-    return textures_.find(name) != textures_.end();
-  }
-  
+   
   gfx::texture_t texture_load(const std::string &path)
   {
-    gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_type::texture_2d};
-
-    // TODO switch for channels and formats of texture
-    desc.internal_format_ = gfx::gl_format::bgra;
-
-    int channels;
-    desc.data_ = stbi_load(path.c_str(), (int *)&desc.width_, (int *)&desc.height_, &channels, 0);
-
-    std::cout << channels << " ";
-    std::cout << path << "\n";
-    gfx::texture_t t = gfx::texture_ctor(desc, false);
-
-    stbi_image_free(desc.data_);
-
-    return t;
+    return texture_load(path.c_str());
   }
 
   gfx::texture_t texture_load_cubemap(const std::vector<const char *> &path)
@@ -117,8 +100,8 @@ namespace gfx_utils
       assert(false && "failed to load texture");
       return {};
     }
-    gfx::texture_desc_t desc = {static_cast<u32>(w), static_cast<u32>(h), data, gfx::gl_texture_type::texture_cubemap};
-    gfx::texture_t t = gfx::texture_ctor(desc);
+    gfx::texture_desc_t desc = {static_cast<u32>(w), static_cast<u32>(h), data, gfx::gl_texture_type::texture_2d};
+    gfx::texture_t t = gfx::texture_ctor(desc, false);
     stbi_image_free(data);
     return t;
   }
@@ -153,4 +136,14 @@ namespace gfx_utils
 
     return p;
   }
+
+
+
+
+
+  // template implementation for libraries 
+	template struct gfx_utils::library_t<gfx::program_t>;
+	template struct gfx_utils::library_t<gfx::texture_t>;
+
+
 } // namespace gfx_utils

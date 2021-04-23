@@ -1,4 +1,5 @@
 #include "gfx.h"
+#include "base/logger.h"
 #include <GL/glew.h>
 
 #include <iostream>
@@ -43,15 +44,15 @@ namespace gfx
     GLenum err = glewInit();
     if (GLEW_OK != err)
     {
-      fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+      logger::error("Failed to init glew: {0}", glewGetErrorString(err));
       assert(false);
       exit(-1);
     }
     i32 minor, major;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
-    fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-    fprintf(stdout, "Status: Using OpenGL %d.%d\n", major, minor);
+    logger::info("Status: Using GLEW {0}", glewGetString(GLEW_VERSION));
+    logger::info("Status: Using OpenGL {0}.{1}", major, minor);
 
   }
 

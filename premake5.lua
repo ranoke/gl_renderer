@@ -6,6 +6,7 @@ workspace "gl_renderer"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
+IncludeDir["spdlog"] = "%{wks.location}/third_party/spdlog/include"
 IncludeDir["glfw"]  = "%{wks.location}/third_party/glfw/include"
 IncludeDir["glew"]  = "%{wks.location}/third_party/glew/include"
 IncludeDir["imgui"] = "%{wks.location}/third_party/imgui"
@@ -61,6 +62,7 @@ project "gl_renderer"
     includedirs
     {
       "source",
+      "%{IncludeDir.spdlog}",
       "%{IncludeDir.glew}",
       "%{IncludeDir.glfw}",
       "%{IncludeDir.imgui}",
@@ -78,8 +80,6 @@ project "gl_renderer"
     { 
       "glew",
       "glfw",
-      
-
     }
 
     filter "system:windows"

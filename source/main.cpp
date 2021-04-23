@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstring>
 
+#include "base/logger.h"
+
 #include "base/base.h"
 
 #include "window.h"
@@ -26,6 +28,11 @@
 
 #include "gui/gui.h"
 
+
+gfx_utils::library_t<gfx::program_t> shader_library;
+gfx_utils::library_t<gfx::texture_t> texture_library;
+
+
 float dt = 0.f; // delta time
 renderer::free_camera_t camera(90, 640.f / 480.f, 0.001f, 10000.f);
 
@@ -35,15 +42,30 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 float camera_speed = 0.5f; 
 int main()
 {
+  logger::init();
   window_t window("gl_renderer", 640, 480);
   gfx::init();
 
-  gfx::program_t p_default = gfx_utils::program_load("./res/shaders/default.vs", "./res/shaders/default.fs");
-  gfx::program_t p_perlin_mesh = gfx_utils::program_load("./res/shaders/perlin_mesh.vs", "./res/shaders/perlin_mesh.fs");
-  gfx::program_t p_light = gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs");
-  gfx::program_t p_material = gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs");
-  gfx::program_t p_skybox = gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs");
-  gfx::program_t p_grid = gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs");
+  logger::info("{0}", 5);
+  logger::warn("{0} warn", 5);
+  logger::trace("{0} trace", 5);
+  logger::error("{0} warn", 5);
+
+
+	gfx::program_t p_default_c = gfx_utils::program_load("./res/shaders/default.vs", "./res/shaders/default.fs");
+	gfx::program_t p_perlin_mesh = gfx_utils::program_load("./res/shaders/perlin_mesh.vs", "./res/shaders/perlin_mesh.fs");
+	gfx::program_t p_light = gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs");
+	gfx::program_t p_material = gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs");
+	gfx::program_t p_skybox = gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs");
+	gfx::program_t p_grid = gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs");
+
+	shader_library.add("default", std::exchange(p_default_c, {}));
+	auto& p_default = shader_library.get("default");
+	auto image_c = gfx_utils::texture_load("./res/image.jpg");
+	texture_library.add("image", std::exchange(image_c, {}));
+	auto& image = texture_library.get("image");
+
+    std::cout << p_default_c << "\n";
 
   gfx::vertex_array_t vao = gfx::vertex_array_ctor();
   //// so i am not sure about this design
@@ -89,8 +111,9 @@ int main()
   glm::mat4 model_grid = glm::scale(model1, { 10, 10, 10 });
 
   gfx::framebuffer_t fb = gfx::framebuffer_ctor({ 640, 480, gfx::framebuffer_attachment::framebuffer_color_attachment });
+
   
-  renderer::mesh_t my_test_mesh = obj_load("./res/Handgun_obj.obj");
+  renderer::mesh_t my_test_mesh = obj_load("./res/monkey.obj");
   my_test_mesh.position_ = { 0, 200, 0 };
   my_test_mesh.scale_ = { 20, 20, 20 };
   while (!glfwWindowShouldClose(window.window_))
@@ -219,7 +242,7 @@ int main()
 
       ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
       ImVec2 m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
-      ImTextureID my_tex_id = (ImTextureID)(static_cast<u64>(my_test_mesh.material_.alpha_tex_));
+      ImTextureID my_tex_id = (ImTextureID)(static_cast<u64>(image.texture_));
       ImGui::Image(my_tex_id, m_ViewportSize, ImVec2{0, 1}, ImVec2{1, 0});
 
       ImGui::End();
