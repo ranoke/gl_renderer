@@ -33,6 +33,7 @@ gfx_utils::library_t<gfx::program_t> shader_library;
 gfx_utils::library_t<gfx::texture_t> texture_library;
 
 
+float last_frame = 0.0f;
 float dt = 0.f; // delta time
 renderer::free_camera_t camera(90, 640.f / 480.f, 0.001f, 10000.f);
 
@@ -43,29 +44,32 @@ float camera_speed = 0.5f;
 int main()
 {
   logger::init();
-  window_t window("gl_renderer", 640, 480);
+  window_t window("gl_renderer", 800, 600);
   gfx::init();
 
-  logger::info("{0}", 5);
-  logger::warn("{0} warn", 5);
-  logger::trace("{0} trace", 5);
-  logger::error("{0} warn", 5);
+  shader_library.add("defualt", gfx_utils::program_load("./res/shaders/default.vs", "./res/shaders/default.fs"));
+  shader_library.add("perlin_terrain", gfx_utils::program_load("./res/shaders/perlin_mesh.vs", "./res/shaders/perlin_mesh.fs"));
+  shader_library.add("basic_light", gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs"));
+  shader_library.add("basic_material", gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs"));
+  shader_library.add("skybox", gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs"));
+  shader_library.add("grid", gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs"));
+  shader_library.add("mesh", gfx_utils::program_load("./res/shaders/mesh.vs", "./res/shaders/mesh.fs"));
+  shader_library.add("hdri_skybox", gfx_utils::program_load("./res/shaders/hdri_skybox.vs", "./res/shaders/hdri_skybox.fs"));
 
+  const gfx::program_t& p_default = shader_library.get("default");
+  const gfx::program_t& p_perlin_terrain = shader_library.get("perlin_terrain");
+  const gfx::program_t& p_basic_light = shader_library.get("basic_light");
+  const gfx::program_t& p_basic_material = shader_library.get("basic_material");
+  const gfx::program_t& p_skybox = shader_library.get("skybox");
+  const gfx::program_t& p_grid = shader_library.get("grid");
+  const gfx::program_t& p_mesh = shader_library.get("mesh");
+  const gfx::program_t& p_hdri_skybox = shader_library.get("hdri_skybox");
+	
+	texture_library.add("image",gfx_utils::texture_load("./res/image.jpg"));
+	const auto& image = texture_library.get("image");
 
-	gfx::program_t p_default_c = gfx_utils::program_load("./res/shaders/default.vs", "./res/shaders/default.fs");
-	gfx::program_t p_perlin_mesh = gfx_utils::program_load("./res/shaders/perlin_mesh.vs", "./res/shaders/perlin_mesh.fs");
-	gfx::program_t p_light = gfx_utils::program_load("./res/shaders/basic_light.vs", "./res/shaders/basic_light.fs");
-	gfx::program_t p_material = gfx_utils::program_load("./res/shaders/materials.vs", "./res/shaders/materials.fs");
-	gfx::program_t p_skybox = gfx_utils::program_load("./res/shaders/skybox.vs", "./res/shaders/skybox.fs");
-	gfx::program_t p_grid = gfx_utils::program_load("./res/shaders/grid.vs", "./res/shaders/grid.fs");
+  auto night = gfx_utils::texture_load_hdri("./res/skybox/night.hdr");
 
-	shader_library.add("default", std::exchange(p_default_c, {}));
-	auto& p_default = shader_library.get("default");
-	auto image_c = gfx_utils::texture_load("./res/image.jpg");
-	texture_library.add("image", std::exchange(image_c, {}));
-	auto& image = texture_library.get("image");
-
-    std::cout << p_default_c << "\n";
 
   gfx::vertex_array_t vao = gfx::vertex_array_ctor();
   //// so i am not sure about this design
@@ -74,8 +78,6 @@ int main()
   gfx::bind_vertex_array(vao);
 
   glfwSetCursorPosCallback(window.window_, mouse_callback);
-
-  float last_frame = 0.0f;
 
 
   renderer::render_object_t perlin_mesh = generate_terrain(128, 128, { 3, 150, 3 });
@@ -110,10 +112,10 @@ int main()
   model_material = glm::scale(model_material, { 10, 10, 10 });
   glm::mat4 model_grid = glm::scale(model1, { 10, 10, 10 });
 
-  gfx::framebuffer_t fb = gfx::framebuffer_ctor({ 640, 480, gfx::framebuffer_attachment::framebuffer_color_attachment });
+  //gfx::framebuffer_t fb = gfx::framebuffer_ctor({ 640, 480, gfx::framebuffer_attachment::framebuffer_color_attachment });
 
   
-  renderer::mesh_t my_test_mesh = obj_load("./res/monkey.obj");
+  renderer::mesh_t my_test_mesh = obj_load("./res/monkey_textures.obj");
   my_test_mesh.position_ = { 0, 200, 0 };
   my_test_mesh.scale_ = { 20, 20, 20 };
   while (!glfwWindowShouldClose(window.window_))
@@ -122,8 +124,8 @@ int main()
 		gfx::clear_color(0.25f, 0.25f, 0.25f);
 		gfx::clear(1);
 
-		gfx::bind_framebuffer(fb);
-		glViewport(0, 0, 640, 480);
+		//gfx::bind_framebuffer(fb);
+		glViewport(0, 0, 800, 600);
 		f32 current_frame = static_cast<f32>(glfwGetTime());
 		dt = current_frame - last_frame;
 		last_frame = current_frame;
@@ -142,11 +144,11 @@ int main()
 		gfx::vertex_array_set_layout({ {gfx::gl_type::gl_float3},
 																	 {gfx::gl_type::gl_float2},
 																	 {gfx::gl_type::gl_float3} });
-		gfx::bind_program(p_skybox);
-		gfx::bind_texture(cube_map, 0);
-		gfx::set_uniform_mat4(p_skybox, "u_view", glm::mat4(glm::mat3(camera.view_)));
-		gfx::set_uniform_mat4(p_skybox, "u_proj", camera.projection_);
-		gfx::set_uniform_int(p_skybox, "skybox", 0);
+		gfx::bind_program(p_hdri_skybox);
+		gfx::bind_texture(night, 0);
+		gfx::set_uniform_mat4(p_hdri_skybox, "u_view", glm::mat4(glm::mat3(camera.view_)));
+		gfx::set_uniform_mat4(p_hdri_skybox, "u_proj", camera.projection_);
+		gfx::set_uniform_int(p_hdri_skybox, "skybox", 0);
 		gfx::draw_elements(gfx::gl_draw_mode::triangles, skybox_mesh.index_count_, gfx::gl_type::gl_uint, 0);
 		glDepthMask(GL_TRUE);
 #endif
@@ -154,10 +156,10 @@ int main()
     gfx::bind_buffer(perlin_mesh.vertex_buffer_);
     gfx::bind_buffer(perlin_mesh.index_buffer_);
     gfx::vertex_array_set_layout({{gfx::gl_type::gl_float3}});
-    gfx::bind_program(p_perlin_mesh);
-    gfx::set_uniform_mat4(p_perlin_mesh, "u_view", camera.view_);
-    gfx::set_uniform_mat4(p_perlin_mesh, "u_proj", camera.projection_);
-    gfx::set_uniform_mat4(p_perlin_mesh, "u_model", model2);
+    gfx::bind_program(p_perlin_terrain);
+    gfx::set_uniform_mat4(p_perlin_terrain, "u_view", camera.view_);
+    gfx::set_uniform_mat4(p_perlin_terrain, "u_proj", camera.projection_);
+    gfx::set_uniform_mat4(p_perlin_terrain, "u_model", model2);
     gfx::draw_elements(gfx::gl_draw_mode::lines, perlin_mesh.index_count_, gfx::gl_type::gl_uint, 0);
 #endif
 
@@ -165,17 +167,17 @@ int main()
     gfx::bind_buffer(mesh.vertex_buffer_);
     gfx::bind_buffer(mesh.index_buffer_);
     gfx::vertex_array_set_layout({{gfx::gl_type::gl_float3}, {gfx::gl_type::gl_float2}, {gfx::gl_type::gl_float3}});
-    gfx::bind_program(p_light);
-    gfx::set_uniform_mat4(p_light, "u_view", camera.view_);
-    gfx::set_uniform_mat4(p_light, "u_proj", camera.projection_);
-    gfx::set_uniform_mat4(p_light, "u_model", model1);
-    gfx::set_uniform_vec3(p_light, "u_light_pos", light_red.position_);
-    gfx::set_uniform_vec3(p_light, "u_view_pos", camera.position_);
-    gfx::set_uniform_vec3(p_light, "u_light_color", light_red.color_);
-    gfx::set_uniform_vec3(p_light, "u_object_color", {1, 1, 1});
-    gfx::set_uniform_float(p_light, "u_ambient_strength", light_red.ambient_strength_);
-    gfx::set_uniform_float(p_light, "u_specular_strength", light_red.specular_strength_);
-    gfx::set_uniform_int(p_light, "u_resolution", light_red.resolution_);
+    gfx::bind_program(p_basic_light);
+    gfx::set_uniform_mat4(p_basic_light, "u_view", camera.view_);
+    gfx::set_uniform_mat4(p_basic_light, "u_proj", camera.projection_);
+    gfx::set_uniform_mat4(p_basic_light, "u_model", model1);
+    gfx::set_uniform_vec3(p_basic_light, "u_light_pos", light_red.position_);
+    gfx::set_uniform_vec3(p_basic_light, "u_view_pos", camera.position_);
+    gfx::set_uniform_vec3(p_basic_light, "u_light_color", light_red.color_);
+    gfx::set_uniform_vec3(p_basic_light, "u_object_color", {1, 1, 1});
+    gfx::set_uniform_float(p_basic_light, "u_ambient_strength", light_red.ambient_strength_);
+    gfx::set_uniform_float(p_basic_light, "u_specular_strength", light_red.specular_strength_);
+    gfx::set_uniform_int(p_basic_light, "u_resolution", light_red.resolution_);
     gfx::draw_elements(gfx::gl_draw_mode::triangles, mesh.index_count_, gfx::gl_type::gl_uint, 0);
 #endif
 
@@ -186,19 +188,19 @@ int main()
     gfx::bind_buffer(mesh.vertex_buffer_);
     gfx::bind_buffer(mesh.index_buffer_);
     gfx::vertex_array_set_layout({{gfx::gl_type::gl_float3}, {gfx::gl_type::gl_float2}, {gfx::gl_type::gl_float3}});
-    gfx::bind_program(p_material);
-    gfx::set_uniform_mat4(p_material, "u_view", camera.view_);
-    gfx::set_uniform_mat4(p_material, "u_proj", camera.projection_);
-    gfx::set_uniform_mat4(p_material, "u_model", model_material);
-    gfx::set_uniform_vec3(p_material, "u_view_pos", camera.position_);
-    gfx::set_uniform_vec3(p_material, "u_material.ambient", mat_ambient);
-    gfx::set_uniform_vec3(p_material, "u_material.diffuse", mat_diffuse);
-    gfx::set_uniform_vec3(p_material, "u_material.specular", mat_specular);
-    gfx::set_uniform_float(p_material, "u_material.shininess", shinnes);
-    gfx::set_uniform_vec3(p_material, "u_light.position", light_red.position_);
-    gfx::set_uniform_vec3(p_material, "u_light.ambient", light_ambient);
-    gfx::set_uniform_vec3(p_material, "u_light.diffuse", light_diffuse);
-    gfx::set_uniform_vec3(p_material, "u_light.specular", light_specular);
+    gfx::bind_program(p_basic_material);
+    gfx::set_uniform_mat4(p_basic_material, "u_view", camera.view_);
+    gfx::set_uniform_mat4(p_basic_material, "u_proj", camera.projection_);
+    gfx::set_uniform_mat4(p_basic_material, "u_model", model_material);
+    gfx::set_uniform_vec3(p_basic_material, "u_view_pos", camera.position_);
+    gfx::set_uniform_vec3(p_basic_material, "u_material.ambient", mat_ambient);
+    gfx::set_uniform_vec3(p_basic_material, "u_material.diffuse", mat_diffuse);
+    gfx::set_uniform_vec3(p_basic_material, "u_material.specular", mat_specular);
+    gfx::set_uniform_float(p_basic_material, "u_material.shininess", shinnes);
+    gfx::set_uniform_vec3(p_basic_material, "u_light.position", light_red.position_);
+    gfx::set_uniform_vec3(p_basic_material, "u_light.ambient", light_ambient);
+    gfx::set_uniform_vec3(p_basic_material, "u_light.diffuse", light_diffuse);
+    gfx::set_uniform_vec3(p_basic_material, "u_light.specular", light_specular);
 
     gfx::draw_elements(gfx::gl_draw_mode::triangles, mesh.index_count_, gfx::gl_type::gl_uint, 0);
 
@@ -213,9 +215,10 @@ int main()
     gfx::draw_elements(gfx::gl_draw_mode::line_strip, grid_mesh.index_count_, gfx::gl_type::gl_uint, 0);
 #endif
 
-    my_test_mesh.render(p_material, camera);
+    gfx::bind_texture(my_test_mesh.material_.bump_tex_, 0);
+    my_test_mesh.render(p_mesh, camera);
 
-    gfx::bind_framebuffer({0});
+    //gfx::bind_framebuffer({0});
 
     gui::begin();
     if (ImGui::Begin("Terrain"))
@@ -242,7 +245,7 @@ int main()
 
       ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
       ImVec2 m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
-      ImTextureID my_tex_id = (ImTextureID)(static_cast<u64>(image.texture_));
+      ImTextureID my_tex_id = (ImTextureID)(static_cast<u64>(night.texture_));
       ImGui::Image(my_tex_id, m_ViewportSize, ImVec2{0, 1}, ImVec2{1, 0});
 
       ImGui::End();
@@ -265,8 +268,8 @@ int main()
     {
       ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
       ImVec2 m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
-      ImTextureID my_tex_id = (ImTextureID)(static_cast<u64>(fb.texture_.texture_));
-      ImGui::Image(my_tex_id, m_ViewportSize, ImVec2{0, 1}, ImVec2{1, 0});
+      //ImTextureID my_tex_id = (ImTextureID)(static_cast<u64>(fb.texture_.texture_));
+      //ImGui::Image(my_tex_id, m_ViewportSize, ImVec2{0, 1}, ImVec2{1, 0});
 
       ImGui::End();
     }

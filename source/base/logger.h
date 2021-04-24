@@ -40,10 +40,9 @@ namespace logger
 	{
 		spdlog::error(args ...);
 	}
-
-
-
+	
 
 } // namespace log
+
 
 #endif // __LOGGER_H_

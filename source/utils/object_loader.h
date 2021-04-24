@@ -47,7 +47,7 @@ obj_load(const std::string& path)
 
 	auto& mat = mesh.material_;
 	// load material
-	if(materials.size() > 1)
+	if(materials.size() > 0)
 	{
 		const tinyobj::material_t& m = materials[0];
 		mat.ambient_ = { m.ambient[0], m.ambient[1], m.ambient[2] };

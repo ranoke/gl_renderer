@@ -53,6 +53,7 @@ namespace gfx
     red, // GL_RED,
     rg, // GL_RG,
     rgb, // GL_RGB,
+    rgb_16f,//GL_RGB16F
     bgr, // GL_BGR,
     rgba,// GL_RGBA,
     bgra,// GL_BGRA,

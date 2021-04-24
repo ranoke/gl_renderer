@@ -85,27 +85,33 @@ project "gl_renderer"
     filter "system:windows"
       system "windows"
       links { "opengl32.lib",  }
-      defines { "_CRT_SECURE_NO_WARNINGS" }
+      defines { 
+        "_CRT_SECURE_NO_WARNINGS",
+        "R_PLATFORM_WINDOWS"
+      }
       
 
     filter "system:linux"
       system "linux"
       linkoptions {"-pthread"}
       links { "GL", "dl"}
+      defines {
+        "R_PLATFORM_LINUX"
+      }
       
 
     filter "configurations:Debug"
-      defines { "DEBUG" }
+      defines { "DEBUG", "R_DEBUG" }
       runtime "Debug"
       symbols "On"
 
     filter "configurations:Release"
-      defines { "RDEBUG" }
+      defines { "RDEBUG", "R_RELEASE" }
       runtime "Release"
       optimize "On"
 
     filter "configurations:Dist"
-      defines { "NDEBUG" }
+      defines { "NDEBUG", "R_DIST" }
       runtime "Release"
       optimize "On"
 

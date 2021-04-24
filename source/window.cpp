@@ -17,11 +17,14 @@ window_t::window_t(const std::string& title, u32 width, u32 height)
     }
   }
 
-  //glfwWindowHint(GLFW_SAMPLES, 4);
-  //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#ifdef R_PLATFORM_LINUX 
+  glfwWindowHint(GLFW_SAMPLES, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE); // To make MacOS happy; should not be needed
-  //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#elif R_PLATFORM_WINDOWS
+#endif
 
   window_ = glfwCreateWindow(width, height, title.c_str(), 0, nullptr);
   if(!window_)
@@ -33,8 +36,6 @@ window_t::window_t(const std::string& title, u32 width, u32 height)
 
   glfwMakeContextCurrent(window_);
   glfwSwapInterval(1);
-
-
 }
 
 void window_t::update()

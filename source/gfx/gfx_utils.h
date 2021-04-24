@@ -41,11 +41,17 @@ namespace gfx_utils
   // right, left, top, bottom, front, back
   gfx::texture_t texture_load_cubemap(const std::vector<const char *> &path);
 
+  gfx::texture_t texture_load_hdri(const std::string& path);
+
   // loads 2d texture
   gfx::texture_t texture_load(const char *path);
 
   // shader
   gfx::program_t program_load(const char *vertex_path, const char *fragment_path);
+
+
+  
+
 
 }
 

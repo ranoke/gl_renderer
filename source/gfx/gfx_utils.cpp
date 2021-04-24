@@ -1,5 +1,7 @@
 #include "gfx_utils.h"
 
+#include "base/logger.h"
+
 #include <iostream>
 #include <string>
 
@@ -15,7 +17,7 @@ namespace gfx_utils
     return path.substr(last_slash, last_dot);
   }
 
-  template<class T>
+  template <class T>
   void library_t<T>::add(const std::string &path)
   {
     assert(false && "i dunno what to do with a path");
@@ -31,31 +33,31 @@ namespace gfx_utils
   //  assert(!exists(name) && "obj with this name already exists");
   //  data_[name] = obj;
   //}
-  template<class T>
-  void library_t<T>::add(const std::string &name, const library_t<T>::type& obj)
+  template <class T>
+  void library_t<T>::add(const std::string &name, const library_t<T>::type &obj)
   {
     assert(!exists(name) && "obj with this name already exists");
     data_[name] = obj;
   }
-  template<class T>
-  void library_t<T>::add(const std::string& name, library_t<T>::type&& obj)
+  template <class T>
+  void library_t<T>::add(const std::string &name, library_t<T>::type &&obj)
   {
     assert(!exists(name) && "obj with this name already exists");
     data_[name] = obj;
   }
 
-  template<class T>
-  const T& library_t<T>::get(const std::string& name)
+  template <class T>
+  const T &library_t<T>::get(const std::string &name)
   {
     return data_[name];
   }
 
- 	template<class T>
+  template <class T>
   bool library_t<T>::exists(const std::string &name)
   {
     return data_.find(name) != data_.end();
   }
-   
+
   gfx::texture_t texture_load(const std::string &path)
   {
     return texture_load(path.c_str());
@@ -66,10 +68,10 @@ namespace gfx_utils
     gfx::texture_desc_t desc = {0, 0, 0, gfx::gl_texture_type::texture_cubemap};
     i32 w, h, c;
     desc.data_ = malloc(6 * sizeof(void *));
-    void** data = (void** )desc.data_;
+    void **data = (void **)desc.data_;
     for (int i = 0; i < 6; i++)
     {
-      data[i] = stbi_load(path[i], &w, &h, &c, 0);
+      data[i] = stbi_load(path[i], &w, &h, &c, 3);
       if (data[i] == NULL)
       {
         assert(false);
@@ -91,16 +93,51 @@ namespace gfx_utils
     return t;
   }
 
+  gfx::texture_t texture_load_hdri(const std::string &path)
+  {
+    gfx::texture_desc_t desc = {0, 0, 0,
+                                gfx::gl_texture_type::texture_2d,
+                                gfx::gl_type::gl_float,
+                                gfx::gl_format::rgb, gfx::gl_format::rgb_16f};
+
+    stbi_set_flip_vertically_on_load(true);
+    i32 w, h, c;
+    float *data = stbi_loadf(path.c_str(), &w, &h, &c, 0);
+    desc.data_ = data;
+    desc.width_ = w;
+    desc.height_ = h;
+    gfx::texture_t t;
+    if (data)
+    {
+      t = gfx::texture_ctor(desc, false);
+      stbi_image_free(data);
+    }
+    else
+    {
+      logger::warn("Failed to load hdri {0}", path);
+    }
+    stbi_set_flip_vertically_on_load(false);
+
+    return t;
+  }
+
   gfx::texture_t texture_load(const char *path)
   {
     int w, h, c;
     void *data = stbi_load(path, &w, &h, &c, 0);
     if (data == NULL)
     {
-      assert(false && "failed to load texture");
+      logger::warn("Failed to load texture: {0}", path);
+
       return {};
     }
-    gfx::texture_desc_t desc = {static_cast<u32>(w), static_cast<u32>(h), data, gfx::gl_texture_type::texture_2d};
+    gfx::texture_desc_t desc = {
+        static_cast<u32>(w),
+        static_cast<u32>(h),
+        data,
+        gfx::gl_texture_type::texture_2d,
+
+    };
     gfx::texture_t t = gfx::texture_ctor(desc, false);
     stbi_image_free(data);
     return t;
@@ -137,13 +174,8 @@ namespace gfx_utils
     return p;
   }
 
-
-
-
-
-  // template implementation for libraries 
-	template struct gfx_utils::library_t<gfx::program_t>;
-	template struct gfx_utils::library_t<gfx::texture_t>;
-
+  // template implementation for libraries
+  template struct gfx_utils::library_t<gfx::program_t>;
+  template struct gfx_utils::library_t<gfx::texture_t>;
 
 } // namespace gfx_utils

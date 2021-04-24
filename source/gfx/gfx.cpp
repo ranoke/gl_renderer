@@ -440,6 +440,7 @@ namespace gfx
     case gl_format::red:  return  GL_RED;
 		case gl_format::rg:  return  GL_RG;
 		case gl_format::rgb:  return GL_RGB;
+    case gl_format::rgb_16f: return GL_RGB16F;
 		case gl_format::bgr:  return  GL_BGR;
 		case gl_format::rgba: return  GL_RGBA;
 		case gl_format::bgra: return  GL_BGRA;

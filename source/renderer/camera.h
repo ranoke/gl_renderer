@@ -1,5 +1,5 @@
-#ifndef __CAMERA_H__
-#define __CAMERA_H__
+#ifndef __CAMERA_H_
+#define __CAMERA_H_
 #include "base/base.h"
 #include "base/types.h"
 
@@ -40,4 +40,4 @@ namespace renderer
 	};
 
 } // namespace renderer
-#endif __CAMERA_H__
+#endif // __CAMERA_H_
