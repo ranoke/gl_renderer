@@ -12,12 +12,14 @@ Windows:
 ```bash
 git clone --recursive git@github.com:ranoke/gl_renderer.git
 # goto proc dir and run windows.bat
+# now you can compile using Visual Studio
 ```
   
 Linux:  
 ```bash
 git clone --recursive git@github.com:ranoke/gl_renderer.git
 ./proc/premake.sh
+make -j8
 ```
 
 
